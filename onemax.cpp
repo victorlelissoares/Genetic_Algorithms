@@ -23,6 +23,7 @@ class Individuo{
 		int return_score();
 		void print_genes();
 		int operator<(Individuo &other);
+		int operator>(Individuo &other);
 
 	//private:
 		vector<int> genes;//vetor de genes
@@ -42,6 +43,10 @@ void Individuo::at_score(){
 
 int Individuo::operator<(Individuo &other){
 	return this->score < other.score;
+}
+
+int Individuo::operator>(Individuo &other){
+	return this->score > other.score;
 }
 
 //construtor
