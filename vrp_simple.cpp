@@ -5,7 +5,7 @@
 using namespace std;
 
 // parâmetros do algoritmo genético
-int qtd_carros;
+int qtd_carros = 2;
 
 int tam_genes = 10; // quantidade de genes
 
@@ -52,7 +52,13 @@ Individuo::Individuo(){
 	}
 
 }
+void Individuo::print_genes(){
 
+	for(auto i: this->cromossomo)
+		cout << i << " ";
+
+	cout << endl;
+}
 
 class Population{
 	public:
@@ -60,7 +66,7 @@ class Population{
 		~Population(); //destrutor padrão
 		void printPopulation();
 		int index_best_score();
-		double dist_euclidiana()
+		inline double dist_euclidiana(Individuo c1, Individuo c2);
 
 
 	//private:
@@ -69,7 +75,10 @@ class Population{
 };
 
 
-
+inline double Population::dist_euclidiana(Individuo c1, Individuo c2){
+	// ( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
+	return sqrt( pow( (c1->cord_x - c2->cord_x), 2) + pow( (c1->cord_y - c2->cord_y), 2) );
+}
 
 
 int main(int argc, char const *argv[]){
