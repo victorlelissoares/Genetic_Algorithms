@@ -54,7 +54,6 @@ Individuo::Individuo(){
 
 }
 void Individuo::print_genes(){
-
 	for(auto i: this->cromossomo)
 		cout << i << " ";
 
