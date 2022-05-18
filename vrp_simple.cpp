@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <time.h>
+#include <cmath>
 using namespace std;
 
 // parâmetros do algoritmo genético
@@ -38,7 +39,7 @@ class Individuo{
 	//private:
 		vector<double> cromossomo;//vetor de genes
 		int cord_x;
-		int cor_y;
+		int cord_y;
 		int score;//score do individuo, vai ser calculado através da distância euclidiana
 		void mutation();//mutação
 		void crossing(Individuo pai1, Individuo pai2);//operador de cruzamento
@@ -66,7 +67,7 @@ class Population{
 		~Population(); //destrutor padrão
 		void printPopulation();
 		int index_best_score();
-		inline double dist_euclidiana(Individuo c1, Individuo c2);
+		inline double dist_euclidiana(Individuo *c1, Individuo *c2);
 
 
 	//private:
@@ -75,7 +76,7 @@ class Population{
 };
 
 
-inline double Population::dist_euclidiana(Individuo c1, Individuo c2){
+inline double Population::dist_euclidiana(Individuo *c1, Individuo *c2){
 	// ( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
 	return sqrt( pow( (c1->cord_x - c2->cord_x), 2) + pow( (c1->cord_y - c2->cord_y), 2) );
 }
