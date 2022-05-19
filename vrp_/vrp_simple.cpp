@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
+#include <random>
+
 using namespace std;
 
 // parâmetros do algoritmo genético
@@ -20,11 +22,10 @@ double prob_mut = 0.2; // probabilidade de mutação
 
 double prob_cruz = 0.7; // probabilidade de cruzamento
 
-int selec_gene = 0;
+int selec_gene = 45;
 
 //função para gerar números(double) aleatórios 
-double fRand(double fMin, double fMax)
-{
+double fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
@@ -32,14 +33,13 @@ double fRand(double fMin, double fMax)
 
 
 class Individuo{
-	friend class Population;
-
+	
 	public:
 		Individuo();
 		~Individuo();
-		void at_score();
-		int return_score();
-		void print_genes();
+		void atScore();
+		int returnScore();
+		void printGenes();
 		
 
 	//private:
@@ -67,16 +67,18 @@ Individuo::~Individuo(){
 
 
 // boas chances de combinar boas características, independente de onde estejam no cromossomo
-void uniform_crossing(Individuo *pai1, Individuo *pai2, Individuo *filho){
-	
+void uniformCrossing(Individuo *pai1, Individuo *pai2, Individuo *filho){
+	int param;
+	srand(time(0));
 	for (int i = 0; i < tam_genes; i++){	
-		
-		int param = rand() % 100;//gerado a cada iteração
-		
+		param = (int) fRand(1, 100);//gerado a cada iteração
+		//cout << "Prob: " << param << endl;
 		if(param > selec_gene){//recebe pai1
+			//cout << "pai 1" << endl;
 			filho->cromossomo[i] = pai1->cromossomo[i];
 		}
-		else{//pai 2
+		else{//recebe pai 2
+			//cout << "pai 2" << endl;
 			filho->cromossomo[i] = pai2->cromossomo[i];
 		}
 
@@ -93,7 +95,7 @@ void Individuo::crossing(Individuo *pai1, Individuo *pai2,
 }
 
 // Muta todo o cromossomo, proporcionando maior diversidade na população
-void imigracao(Individuo *indi){
+void imigracaoMutation(Individuo *indi){
 	for (int i = 0; i < tam_genes; ++i){
 		double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
 
@@ -106,7 +108,7 @@ void Individuo::mutation(void(*type_mutation)(Individuo *indi)){
 	type_mutation(this);
 }
 
-void Individuo::print_genes(){
+void Individuo::printGenes(){
 	for(auto i: this->cromossomo)
 		cout << i << " ";
 
@@ -118,26 +120,62 @@ class Population{
 		Population(); //construtor padrão
 		~Population(); //destrutor padrão
 		void printPopulation();
-		int index_best_score();
-		inline double dist_euclidiana(Individuo *c1, Individuo *c2);
-
+		int indexBestScore();
+		inline double distEuclidiana(Individuo *c1, Individuo *c2);
 
 	//private:
 		vector<Individuo> population;
 
+
 };
 
+Population::Population(){
+	for (int i = 0; i < tam_pop; i++){
+		Individuo indi;
 
-inline double Population::dist_euclidiana(Individuo *c1, Individuo *c2){
+		this->population.push_back(indi);
+	}
+	
+}
+
+void Population::printPopulation(){
+	cout << "População" << endl;
+	for (int i = 0; i < tam_pop; i++){
+		cout << i+1 << ". ";
+		this->population[i].printGenes();
+	}
+	cout << "Fim População" << endl;
+}
+
+Population::~Population(){
+	;
+}
+
+
+inline double Population::distEuclidiana(Individuo *c1, Individuo *c2){
 	// ( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
 	return sqrt( pow( (c1->cord_x - c2->cord_x), 2) + pow( (c1->cord_y - c2->cord_y), 2) );
 }
 
 
 int main(int argc, char const *argv[]){
-	srand(time(NULL));
-	Individuo indi;
-	indi.print_genes();
+	srand(time(0));
+	Population pop;
+	Individuo teste;
+
+	pop.printPopulation();
+	
+	//teste de cruzamento
+	// teste = pop.population[2];
+	// teste.printGenes();
+	// teste.mutation(&imigracaoMutation);
+	// teste.printGenes();
+
+	//teste de reprodução
+	// Individuo filho;
+	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
+	// filho.printGenes();
+
 
 
 	return 0;
