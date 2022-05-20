@@ -4,6 +4,7 @@
 #include <time.h>
 #include <cmath>
 #include <random>
+#include <fstream>
 
 using namespace std;
 
@@ -23,6 +24,8 @@ double prob_mut = 0.2; // probabilidade de mutação
 double prob_cruz = 0.7; // probabilidade de cruzamento
 
 int selec_gene = 45;
+
+int capacity = 0;
 
 //função para gerar números(double) aleatórios 
 double fRand(double fMin, double fMax){
@@ -162,8 +165,17 @@ int main(int argc, char const *argv[]){
 	srand(time(0));
 	Population pop;
 	Individuo teste;
+	ifstream myfile;
+	string myline;
 
-	pop.printPopulation();
+	myfile.open("toy.vrp");
+
+	getline(myfile, myline, '\n');
+	
+	tam_genes = myline.back();
+
+	getline(myfile, myline, '\n');
+	capacity = myline.back();
 	
 	//teste de cruzamento
 	// teste = pop.population[2];
