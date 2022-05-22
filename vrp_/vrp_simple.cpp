@@ -5,6 +5,7 @@
 #include <cmath>
 #include <random>
 #include <fstream>
+#include <string.h>
 
 using namespace std;
 
@@ -27,6 +28,12 @@ int selec_gene = 45;
 
 int capacity = 0;
 
+int depot = 0;
+
+vector< pair <int, int> > distance_vec;
+
+vector<int> demand_vec;
+
 //função para gerar números(double) aleatórios 
 double fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
@@ -36,7 +43,6 @@ double fRand(double fMin, double fMax){
 
 
 class Individuo{
-	
 	public:
 		Individuo();
 		~Individuo();
@@ -47,8 +53,6 @@ class Individuo{
 
 	//private:
 		vector<double> cromossomo;//vetor de genes
-		int cord_x;
-		int cord_y;
 		int score;//score do individuo, vai ser calculado através da distância euclidiana
 		void mutation(void (*type_mutation)(Individuo *indi));//mutação
 		void crossing(Individuo *pai1, Individuo *pai2, 
@@ -124,7 +128,7 @@ class Population{
 		~Population(); //destrutor padrão
 		void printPopulation();
 		int indexBestScore();
-		inline double distEuclidiana(Individuo *c1, Individuo *c2);
+		inline double distEuclidiana(int cl1, int cl2);
 
 	//private:
 		vector<Individuo> population;
@@ -135,7 +139,6 @@ class Population{
 Population::Population(){
 	for (int i = 0; i < tam_pop; i++){
 		Individuo indi;
-
 		this->population.push_back(indi);
 	}
 	
@@ -155,27 +158,87 @@ Population::~Population(){
 }
 
 
-inline double Population::distEuclidiana(Individuo *c1, Individuo *c2){
-	// ( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
-	return sqrt( pow( (c1->cord_x - c2->cord_x), 2) + pow( (c1->cord_y - c2->cord_y), 2) );
+void read_file(){
+ifstream myfile;
+	string myline;
+	char *line;
+	int i = 0;
+
+	myfile.open("toy.vrp");
+
+	getline(myfile, myline, '\n');//read dimension line
+	
+	tam_genes = myline.back(); //
+
+	getline(myfile, myline, '\n');
+	capacity = myline.back();
+
+	//lê seção de coordenadas
+	getline(myfile, myline, '\n');//ignore node_coord section
+	while(1){
+		getline(myfile, myline, '\n');//pega a linha contendo as coordenadas
+		line = new char[myline.length()+1];
+		strcpy(line, myline.c_str());
+		if(myline.find("DEMAND_SECTION", 0) != string::npos){	
+			break;
+		}
+		
+		char *tok = strtok(line, " \n");
+		//cout << tok << endl;
+		tok = strtok(NULL, " \n");
+		string str;
+		str.assign(tok);
+		//cout << str << endl;
+		int x = stoi(str);//coordenada x
+		//cout << x << endl;
+
+		tok = strtok(NULL, " \n");
+		str.assign(tok);//coordenada y
+
+		distance_vec.push_back(make_pair(x, stoi(str)));//insere as cord. no vetor de distância
+
+		cout << "cord_x: " << distance_vec[i].first << " cord_y: " << distance_vec[i].second
+		<< endl;
+		
+		i++;
+	}
+	i = 0;
+	while (1){
+		getline(myfile, myline, '\n');//lê a 1 linha de demmand section
+		strcpy(line, myline.c_str());
+		// cout << "antes";
+		if(myline.find("DEPOT_SECTION", 0) != string::npos){	
+			// cout << "dentro" << endl;
+			break;
+		}
+		// cout << "depois";
+		char *tok = strtok(line, " \n");
+		int pos = stoi(tok);
+		cout << "client: " << pos << " ";
+		tok = strtok(NULL, " \n");
+		cout << " demand: " << stoi(tok) << endl;
+		demand_vec.push_back(stoi(tok));
+	}
+
+	//depot section
+	getline(myfile, myline, '\n');//lê deposito
+	depot = stoi(myline) - 1;
+	getline(myfile, myline, '\n');//lê fim dos depósitos
+	getline(myfile, myline, '\n');//lê o fim de um arquivo
 }
+
+// inline double Population::distEuclidiana(Individuo *c1, Individuo *c2){
+// 	// ( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
+// 	return sqrt( pow( (c1->cord_x - c2->cord_x), 2) + pow( (c1->cord_y - c2->cord_y), 2) );
+// }
 
 
 int main(int argc, char const *argv[]){
 	srand(time(0));
 	Population pop;
 	Individuo teste;
-	ifstream myfile;
-	string myline;
-
-	myfile.open("toy.vrp");
-
-	getline(myfile, myline, '\n');
 	
-	tam_genes = myline.back();
-
-	getline(myfile, myline, '\n');
-	capacity = myline.back();
+	read_file();
 	
 	//teste de cruzamento
 	// teste = pop.population[2];
@@ -187,8 +250,6 @@ int main(int argc, char const *argv[]){
 	// Individuo filho;
 	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
 	// filho.printGenes();
-
-
 
 	return 0;
 }
