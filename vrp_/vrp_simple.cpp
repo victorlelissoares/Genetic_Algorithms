@@ -6,13 +6,16 @@
 #include <random>
 #include <fstream>
 #include <string.h>
+#include<cstdlib>
+#include<ctime>
+#include<algorithm>
 
 using namespace std;
 
 // parâmetros do algoritmo genético
 int qtd_carros = 2;
 
-int tam_genes = 10; // quantidade de genes
+int tam_genes = 6; // quantidade de genes
 
 int tam_pop = 5; // quantidade de indivíduos da população
 
@@ -40,7 +43,10 @@ double fRand(double fMin, double fMax){
     return fMin + f * (fMax - fMin);
 }
 
-
+inline double distEuclidiana(pair<int, int> cl1, pair<int, int>cl2){	
+	//( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
+ 	return sqrt( pow( (cl1.first - cl2.first), 2) + pow( (cl1.second - cl2.second), 2) );
+}
 
 class Individuo{
 	public:
@@ -52,26 +58,37 @@ class Individuo{
 		
 
 	//private:
-		vector<double> cromossomo;//vetor de genes
+		vector< pair<int, double> > cromossomo;//vetor de genes
 		int score;//score do individuo, vai ser calculado através da distância euclidiana
 		void mutation(void (*type_mutation)(Individuo *indi));//mutação
 		void crossing(Individuo *pai1, Individuo *pai2, 
 		void (*type_crossing)(Individuo*, Individuo*, Individuo*));//operador de cruzamento, recebe a função de cruzamento como parâmetro
 };
 
+void Individuo::atScore(){
+	vector<pair<int, double>> v = this->cromossomo;
+	sort(v.begin(), v.end(),
+     [](const pair<int, double>& lhs, const pair<int, double>& rhs) {
+             return lhs.second < rhs.second; } );
+	
+	 for(auto i: v)
+	 	cout << i.second << " ";
+
+	cout << endl;
+	
+}
+
 Individuo::Individuo(){
 	for (int i = 0; i < tam_genes; ++i){
 		double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
 
-		this->cromossomo.push_back(gene);//insere o gene no cromossomo
+		this->cromossomo.push_back(make_pair(i, gene));//insere o gene no cromossomo
 	}
 
 }
 
 Individuo::~Individuo(){
-
 }
-
 
 // boas chances de combinar boas características, independente de onde estejam no cromossomo
 void uniformCrossing(Individuo *pai1, Individuo *pai2, Individuo *filho){
@@ -89,8 +106,7 @@ void uniformCrossing(Individuo *pai1, Individuo *pai2, Individuo *filho){
 			filho->cromossomo[i] = pai2->cromossomo[i];
 		}
 
-	}
-		
+	}		
 }
 
 void Individuo::crossing(Individuo *pai1, Individuo *pai2, 
@@ -105,8 +121,9 @@ void Individuo::crossing(Individuo *pai1, Individuo *pai2,
 void imigracaoMutation(Individuo *indi){
 	for (int i = 0; i < tam_genes; ++i){
 		double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
-
-		indi->cromossomo[i] = gene;//altera o valor do gene
+		//auto pos = indi->cromossomo.begin()+i;
+		//indi->cromossomo.emplace(pos, pair<int, double>(indi->cromossomo[i].first, gene));//altera o valor do gene
+		indi->cromossomo.at(i) = pair<int, double>(indi->cromossomo[i].first, gene);
 	}
 
 }
@@ -117,7 +134,7 @@ void Individuo::mutation(void(*type_mutation)(Individuo *indi)){
 
 void Individuo::printGenes(){
 	for(auto i: this->cromossomo)
-		cout << i << " ";
+		cout << i.second << " ";
 
 	cout << endl;
 }
@@ -128,11 +145,9 @@ class Population{
 		~Population(); //destrutor padrão
 		void printPopulation();
 		int indexBestScore();
-		inline double distEuclidiana(int cl1, int cl2);
 
 	//private:
 		vector<Individuo> population;
-
 
 };
 
@@ -157,9 +172,8 @@ Population::~Population(){
 	;
 }
 
-
 void read_file(){
-ifstream myfile;
+	ifstream myfile;
 	string myline;
 	char *line;
 	int i = 0;
@@ -227,24 +241,19 @@ ifstream myfile;
 	getline(myfile, myline, '\n');//lê o fim de um arquivo
 }
 
-// inline double Population::distEuclidiana(Individuo *c1, Individuo *c2){
-// 	// ( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
-// 	return sqrt( pow( (c1->cord_x - c2->cord_x), 2) + pow( (c1->cord_y - c2->cord_y), 2) );
-// }
-
 
 int main(int argc, char const *argv[]){
 	srand(time(0));
 	Population pop;
 	Individuo teste;
 	
-	read_file();
-	
-	//teste de cruzamento
-	// teste = pop.population[2];
-	// teste.printGenes();
-	// teste.mutation(&imigracaoMutation);
-	// teste.printGenes();
+	//read_file();
+	// teste de cruzamento
+	teste = pop.population[2];
+	teste.printGenes();
+	teste.mutation(&imigracaoMutation);
+	teste.printGenes();
+	teste.atScore();
 
 	//teste de reprodução
 	// Individuo filho;
