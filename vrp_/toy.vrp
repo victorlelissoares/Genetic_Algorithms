@@ -1,3 +1,6 @@
+NAME : toy.vrp
+COMMENT : toy instance
+TYPE : CVRP
 DIMENSION : 6
 CAPACITY : 30
 NODE_COORD_SECTION

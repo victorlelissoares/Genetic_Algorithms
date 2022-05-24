@@ -270,7 +270,9 @@ void read_file(){
 	int i = 0;
 
 	myfile.open("toy.vrp");
-
+	getline(myfile, myline, '\n');//ignore name
+	getline(myfile, myline, '\n');//ignore comment
+	getline(myfile, myline, '\n');//ignore type
 	//lê a linha que especifica o número de clientes
 	getline(myfile, myline, '\n');//read dimension line
 	line = new char[myline.length()+1];
