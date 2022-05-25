@@ -171,6 +171,7 @@ Individuo::Individuo(){
 
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
+	this->infeasibility = 0;
 	this->atScore();
 }
 
@@ -220,7 +221,8 @@ void Individuo::mutation(void(*type_mutation)(Individuo *indi)){
 
 void Individuo::printGenes(){
 	for(auto i: this->cromossomo){
-		cout << "Cliente: " << i.first << " " << i.second << " ";
+		//cout << "Cliente: " << i.first << " " << i.second << " ";
+		cout << i.second << " ";
 	}
 	cout << "; Fit: " << this->score;
 	cout << " ; Inviavel? " << this->infeasibility;
@@ -355,13 +357,17 @@ void read_file(){
 }
 
 
+
+// Uma certa porcentagem das melhores soluções é mantida para a proxima geração(elitismo)
+// Uma taxa de mutação bastante alta é usada para manter a diversidade
+// e por fim, o restante da população é produzido por reprodução
 int main(int argc, char const *argv[]){
 	read_file();
 	srand(time(0));
 	Population pop;
 	Individuo teste;
 	
-	pop.printPopulation();
+	//pop.printPopulation();
 	// teste de cruzamento
 	// teste = pop.population[2];
 	// teste.printGenes();
@@ -373,6 +379,15 @@ int main(int argc, char const *argv[]){
 	// Individuo filho;
 	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
 	// filho.printGenes();
+	
+	//Para que o cruzamento seja aplicado, os "pais" devem ser selecionados
+	//Há vários procedimentos de seleção, dentre eles: Seleção por Roleta e a Seleção por Torneio 
+	// No procedimento de seleção por torneio, sorteiam-se dois indivíduos ao acaso, 
+	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
+	// cada indivíduo a ser selecionado.
+
+
+	
 
 	return 0;
 }
