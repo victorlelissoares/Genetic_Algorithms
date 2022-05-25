@@ -60,6 +60,7 @@ class Individuo{
 	//private:
 		vector< pair<int, double> > cromossomo;//vetor de genes
 		int score;//score do individuo, vai ser calculado através da distância euclidiana
+		int infeasibility;
 		void mutation(void (*type_mutation)(Individuo *indi));//mutação
 		void crossing(Individuo *pai1, Individuo *pai2, 
 		void (*type_crossing)(Individuo*, Individuo*, Individuo*));//operador de cruzamento, recebe a função de cruzamento como parâmetro
@@ -79,21 +80,11 @@ void Individuo::atScore(){
 
 	cout << endl;
 
-	// cout << "cord_x: " << distance_vec[depot].first << " cord_y: " << distance_vec[depot].second
-	// 	<< endl;
-
-	// for(auto i: v)
-	// cout << "cord_x: " << distance_vec[i.first - 2].first << " cord_y: " << distance_vec[i.first-2].second
-	// 	<< endl;
-	// cout << "cord_x: " << distance_vec[v[0].first-1].first << " cord_y: " << distance_vec[v[0].first-1].second;
-	// cout << endl << "distancia: " << distEuclidiana(distance_vec[depot], distance_vec[v[0].first-1]) << endl;
-	// cout << "Fim Função Atualiza Score" << endl << endl;
-
 	double score_fit = 0;
 	int i = 0;
 	int indi_1 = 0;
 	int indi_2 = v[i].first-1;
-	int actual_car = 1;
+	int actual_car = 1;//considerando que existe mais de um veículo
 	int peso = 0;
 	
 	cout << "veículo " << (int) v[i].second << " saindo do depósito" << endl;
@@ -129,8 +120,10 @@ void Individuo::atScore(){
 			// não excedeu o quanto o caminhão pode levar
 			// caso sim, multiplicamos o quanto foi excedido
 			// para "penalizar" a solução
-			if(peso - capacity > 0)//significa que a capacidade do caminhão foi ultrapassada
+			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
 				score_fit *= (peso - capacity);
+				this->infeasibility += 1;
+			}
 			
 			// cout << score_fit << endl;
 			cout << "Total Percorrido com penalização: " << score_fit << endl;
@@ -155,8 +148,10 @@ void Individuo::atScore(){
 			cout << indi_1+1 << " e " << "1" << "; " ;
 			cout << distEuclidiana(distance_vec[indi_1], distance_vec[0]) << endl;
 			score_fit+=distEuclidiana(distance_vec[indi_1], distance_vec[0]);
-			if(peso - capacity > 0)//significa que a capacidade do caminhão foi ultrapassada
+			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
 				score_fit *= (peso - capacity);
+				this->infeasibility += 1;
+			}
 			// cout << score_fit << endl;
 			cout << "Total Percorrido com penalização: " << score_fit << endl;
 
@@ -176,7 +171,8 @@ Individuo::Individuo(){
 
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
-
+	this->infeasibility = 0;
+	this->atScore();
 }
 
 Individuo::~Individuo(){
@@ -224,9 +220,12 @@ void Individuo::mutation(void(*type_mutation)(Individuo *indi)){
 }
 
 void Individuo::printGenes(){
-	for(auto i: this->cromossomo)
-		cout << "Cliente: " << i.first << " " << i.second << " ";
-
+	for(auto i: this->cromossomo){
+		//cout << "Cliente: " << i.first << " " << i.second << " ";
+		cout << i.second << " ";
+	}
+	cout << "; Fit: " << this->score;
+	cout << " ; Inviavel? " << this->infeasibility;
 	cout << endl;
 }
 
@@ -358,24 +357,39 @@ void read_file(){
 }
 
 
+
+// Uma certa porcentagem das melhores soluções é mantida para a proxima geração(elitismo)
+// Uma taxa de mutação bastante alta é usada para manter a diversidade
+// e por fim, o restante da população é produzido por reprodução
 int main(int argc, char const *argv[]){
 	read_file();
 	srand(time(0));
 	Population pop;
 	Individuo teste;
 	
-	
+	//pop.printPopulation();
 	// teste de cruzamento
 	// teste = pop.population[2];
 	// teste.printGenes();
 	// teste.mutation(&imigracaoMutation);
-	teste.printGenes();
-	teste.atScore();
+	// teste.printGenes();
+	// teste.atScore();
 
 	//teste de reprodução
 	// Individuo filho;
 	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
 	// filho.printGenes();
+	
+	//Para que o cruzamento seja aplicado, os "pais" devem ser selecionados
+	//Há vários procedimentos de seleção, dentre eles: Seleção por Roleta e a Seleção por Torneio 
+	// No procedimento de seleção por torneio, sorteiam-se dois indivíduos ao acaso, 
+	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
+	// cada indivíduo a ser selecionado.
+
+	for (int i = 0; i < geracoes; i++){
+		
+	}
+	
 
 	return 0;
 }
