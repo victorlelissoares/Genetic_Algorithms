@@ -386,9 +386,7 @@ int main(int argc, char const *argv[]){
 	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
 	// cada indivíduo a ser selecionado.
 
-	for (int i = 0; i < geracoes; i++){
-		
-	}
+
 	
 
 	return 0;
