@@ -171,8 +171,8 @@ Individuo::Individuo(){
 
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
-	this->infeasibility = 0;
-	this->atScore();
+	this->infeasibility = 0;//diz se a solução é viável ou não
+	this->atScore(); // atualiza o score do individuo, ou seja, a distância total * pela inviabilidade
 }
 
 Individuo::~Individuo(){
@@ -386,7 +386,10 @@ int main(int argc, char const *argv[]){
 	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
 	// cada indivíduo a ser selecionado.
 
-
+	pop.printPopulation();
+	sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
+              return lhs.score < rhs.score; } );
+	pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
 	
 
 	return 0;
