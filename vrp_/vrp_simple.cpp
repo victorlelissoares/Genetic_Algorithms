@@ -67,7 +67,7 @@ class Individuo{
 };
 
 void Individuo::atScore(){
-	cout << endl << "Função Atualiza Score" << endl;
+	//cout << endl << "Função Atualiza Score" << endl;
 	vector<pair<int, double>> v = this->cromossomo;
 	// Como a ordem de visitas de um veículo é dado pelo seu double
 	// ordeno o vetor para saber qual a ordem de visitas aos clientes
@@ -75,10 +75,10 @@ void Individuo::atScore(){
      [](const pair<int, double>& lhs, const pair<int, double>& rhs) {
              return lhs.second < rhs.second; } );
 	
-	for(auto i: v)
-		cout << "Cliente: " << i.first << " " << i.second << " ";
+	// for(auto i: v)
+	// 	cout << "Cliente: " << i.first << " " << i.second << " ";
 
-	cout << endl;
+	// cout << endl;
 
 	double score_fit = 0;
 	int i = 0;
@@ -87,17 +87,17 @@ void Individuo::atScore(){
 	int actual_car = 1;//considerando que existe mais de um veículo
 	int peso = 0;
 	
-	cout << "veículo " << (int) v[i].second << " saindo do depósito" << endl;
+	//cout << "veículo " << (int) v[i].second << " saindo do depósito" << endl;
 
 	while ( i < tam_genes){
-		cout << indi_1+1 << " e " << indi_2+1 << "; ";
+		//cout << indi_1+1 << " e " << indi_2+1 << "; ";
 		score_fit +=  distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
-		cout << distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]) << endl;;
+		//cout << distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]) << endl;;
 		
 		indi_1 = indi_2;
 		peso+= demand_vec[indi_1];
-		cout << "Peso a ser adicionado: " << demand_vec[indi_1] <<
-		"; Peso até então: " << peso << endl;
+		// cout << "Peso a ser adicionado: " << demand_vec[indi_1] <<
+		// "; Peso até então: " << peso << endl;
 		i++;
 		indi_2 = v[i].first-1;
 		// cout << "atual: " << indi_1+1 << endl;
@@ -109,12 +109,12 @@ void Individuo::atScore(){
 		if(actual_car < (int) v[i].second){
 			//peso-=demand_vec[indi_1];
 			actual_car = (int) v[i].second;
-			cout << "retornando ao depósito" << endl;
-			cout << indi_1+1 << " e " << "1" << "; ";
-			cout << distEuclidiana(distance_vec[indi_1], distance_vec[0]) << endl;
+			//cout << "retornando ao depósito" << endl;
+			//cout << indi_1+1 << " e " << "1" << "; ";
+			//cout << distEuclidiana(distance_vec[indi_1], distance_vec[0]) << endl;
 			score_fit +=  distEuclidiana(distance_vec[indi_1], distance_vec[0]);//retorna ao depósito
-			cout << "Peso total usado: " << peso << endl;
-			cout << "Total Percorrido: " << score_fit << endl;
+			//cout << "Peso total usado: " << peso << endl;
+			//cout << "Total Percorrido: " << score_fit << endl;
 			
 			//após retornar o depósito, checamos se aquela rota
 			// não excedeu o quanto o caminhão pode levar
@@ -122,16 +122,16 @@ void Individuo::atScore(){
 			// para "penalizar" a solução
 			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
 				score_fit *= (peso - capacity);
-				this->infeasibility += 1;
+				this->infeasibility += actual_car;
 			}
 			
 			// cout << score_fit << endl;
-			cout << "Total Percorrido com penalização: " << score_fit << endl;
+			//cout << "Total Percorrido com penalização: " << score_fit << endl;
 			// após isso, significa que o próximo cliente, será visitado por outro caminhão
 			// então, o mesmo deve sair do depósito
-			cout << "Veículo " <<(int)v[i].second << " saindo do depósito" << endl;
-			cout << "1" << " e " << indi_2+1 << "; ";
-			cout << distEuclidiana(distance_vec[0], distance_vec[indi_2]) << endl;
+			//cout << "Veículo " <<(int)v[i].second << " saindo do depósito" << endl;
+			//cout << "1" << " e " << indi_2+1 << "; ";
+			//cout << distEuclidiana(distance_vec[0], distance_vec[indi_2]) << endl;
 			score_fit += distEuclidiana(distance_vec[0], distance_vec[indi_2]);//adiciona a distância de fato
 			
 			peso = 0;
@@ -141,27 +141,27 @@ void Individuo::atScore(){
 			indi_2 = v[i].first-1;
 		}
 		if(indi_2+1 == 0){//fim da linha
-			cout << "Voltando ao depósito" << endl;
-			cout << "Peso : " << peso << endl;
+			//cout << "Voltando ao depósito" << endl;
+			//cout << "Peso : " << peso << endl;
 			// quer dizer que terminaram as entregas
 			// então o caminhão atual deve retornar ao depósito
-			cout << indi_1+1 << " e " << "1" << "; " ;
-			cout << distEuclidiana(distance_vec[indi_1], distance_vec[0]) << endl;
+			//cout << indi_1+1 << " e " << "1" << "; " ;
+			//cout << distEuclidiana(distance_vec[indi_1], distance_vec[0]) << endl;
 			score_fit+=distEuclidiana(distance_vec[indi_1], distance_vec[0]);
 			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
 				score_fit *= (peso - capacity);
 				this->infeasibility += 1;
 			}
 			// cout << score_fit << endl;
-			cout << "Total Percorrido com penalização: " << score_fit << endl;
+			//cout << "Total Percorrido com penalização: " << score_fit << endl;
 
 		}
 
 	}
 	
 	this->score = score_fit;
-	cout << "Total Percorrido: " << score_fit << endl;
-	cout << "Finaliza Função Score" << endl << endl;
+	//cout << "Total Percorrido: " << score_fit << endl;
+	//cout << "Finaliza Função Score" << endl << endl;
 }
 
 Individuo::Individuo(){
@@ -392,8 +392,9 @@ int main(int argc, char const *argv[]){
               return lhs.score < rhs.score; } );
 	pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
 
-
+	cout<<endl;
 	for(int numGeracoes = 0; numGeracoes < geracoes; numGeracoes++){
+		cout << "Geração " << numGeracoes << endl;
 		sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
               return lhs.score < rhs.score; } );
 		pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
@@ -404,8 +405,8 @@ int main(int argc, char const *argv[]){
 		//o restante da população será produzido por cruzamento e mutação
 		for (int i = 0; i < tam_torneio; i++){//implementa o torneio
 			
-			double prob = fRand(0, RAND_MAX);
-			
+			double prob = fRand(0, 1);
+			cout << "probabilidade: " << prob << endl;
 			if(prob < prob_cruz){
 				
 				int indice_pai1;
@@ -413,6 +414,7 @@ int main(int argc, char const *argv[]){
 				{
 					indice_pai1 = rand() % tam_pop;
 				} while (indice_pai1 >= 0 && indice_pai1 <= tam_elitismo-1);
+				cout << "Indice pai 1: " << indice_pai1 << endl;
 				 
 				
 				int indice_pai2 = rand() % tam_pop;
@@ -421,26 +423,33 @@ int main(int argc, char const *argv[]){
 				while(indice_pai2 == indice_pai1 && (indice_pai2 >= 0 && indice_pai2 <= tam_elitismo-1)){
 					indice_pai2 = rand() % tam_pop;
 				}
+				cout << "Indice pai 2: " << indice_pai2 << endl;
 				Individuo filho;
 
 				//filho.print_genes();
 				filho.crossing(&pop.population[indice_pai1], &pop.population[indice_pai2], &uniformCrossing);
 				filho.atScore();//atualiza o score do filho
-				//filho.print_genes();
 
-				double prob = fRand(0, RAND_MAX);
+				cout << "Filho: ";
+				filho.printGenes();
+
+				double prob = fRand(0, 1);
 
 				if(prob < prob_mut){
 					filho.mutation(&imigracaoMutation);
 					filho.atScore();//atualiza o score
 				}
 
-				if( pop.population[indice_pai1].score < filho.score){
+				if( pop.population[indice_pai1].score > filho.score){  
+					cout << "pai antes: ";
+					pop.population[indice_pai1].printGenes();
 					//copia genes do filho para o pai
 					for (int k = 0; k < tam_genes; ++k){
 						pop.population[indice_pai1].cromossomo[k] = filho.cromossomo[k];
 					}
+					cout << "pai depois: ";
 					pop.population[indice_pai1].atScore();//atualiza o score
+					pop.population[indice_pai1].printGenes();
 
 				}
 			}
@@ -449,7 +458,8 @@ int main(int argc, char const *argv[]){
 		
 
 	}
-	
-
+	cout << endl;
+	pop.printPopulation();
+	cout << endl;
 	return 0;
 }
