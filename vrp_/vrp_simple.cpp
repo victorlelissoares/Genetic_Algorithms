@@ -17,7 +17,7 @@ int qtd_carros = 2;
 
 int tam_genes = 0; // quantidade de genes
 
-int tam_pop = 5; // quantidade de indivíduos da população
+int tam_pop = 10; // quantidade de indivíduos da população
 
 int tam_torneio = 20; // tamanho do torneio
 
@@ -171,8 +171,8 @@ Individuo::Individuo(){
 
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
-	this->infeasibility = 0;
-	this->atScore();
+	this->infeasibility = 0;//diz se a solução é viável ou não
+	this->atScore(); // atualiza o score do individuo, ou seja, a distância total * pela inviabilidade
 }
 
 Individuo::~Individuo(){
@@ -386,7 +386,27 @@ int main(int argc, char const *argv[]){
 	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
 	// cada indivíduo a ser selecionado.
 
+	pop.printPopulation();
+	sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
+              return lhs.score < rhs.score; } );
+	pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
 
+
+	for(int numGeracoes = 0; numGeracoes < geracoes; numGeracoes++){
+		sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
+              return lhs.score < rhs.score; } );
+		pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
+		
+		int tam_elitismo = rand() % tam_pop / 2;//define quantos "melhores elementos" serão mantidos
+		cout << "elitismo: " << tam_elitismo << endl;
+
+		//o restante da população será produzido por cruzamento e mutação
+		for (int i = 0; i < tam_torneio; i++){//implementa o torneio
+			
+		}
+		
+
+	}
 	
 
 	return 0;
