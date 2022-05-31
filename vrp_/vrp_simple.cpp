@@ -21,7 +21,7 @@ int tam_pop = 10; // quantidade de indivíduos da população
 
 int tam_torneio = 20; // tamanho do torneio
 
-int geracoes = 100; // quantidade de gerações
+int geracoes = 1000; // quantidade de gerações
 
 double prob_mut = 0.2; // probabilidade de mutação
 
@@ -368,6 +368,7 @@ int main(int argc, char const *argv[]){
 	Individuo teste;
 	
 	//pop.printPopulation();
+
 	// teste de cruzamento
 	// teste = pop.population[2];
 	// teste.printGenes();
@@ -375,7 +376,7 @@ int main(int argc, char const *argv[]){
 	// teste.printGenes();
 	// teste.atScore();
 
-	//teste de reprodução
+	// teste de reprodução
 	// Individuo filho;
 	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
 	// filho.printGenes();
@@ -403,6 +404,47 @@ int main(int argc, char const *argv[]){
 		//o restante da população será produzido por cruzamento e mutação
 		for (int i = 0; i < tam_torneio; i++){//implementa o torneio
 			
+			double prob = fRand(0, RAND_MAX);
+			
+			if(prob < prob_cruz){
+				
+				int indice_pai1;
+				do
+				{
+					indice_pai1 = rand() % tam_pop;
+				} while (indice_pai1 >= 0 && indice_pai1 <= tam_elitismo-1);
+				 
+				
+				int indice_pai2 = rand() % tam_pop;
+				
+				//garante que os indices são diferentes e que mantem o n primeiros "melhores números"
+				while(indice_pai2 == indice_pai1 && (indice_pai2 >= 0 && indice_pai2 <= tam_elitismo-1)){
+					indice_pai2 = rand() % tam_pop;
+				}
+				Individuo filho;
+
+				//filho.print_genes();
+				filho.crossing(&pop.population[indice_pai1], &pop.population[indice_pai2], &uniformCrossing);
+				filho.atScore();//atualiza o score do filho
+				//filho.print_genes();
+
+				double prob = fRand(0, RAND_MAX);
+
+				if(prob < prob_mut){
+					filho.mutation(&imigracaoMutation);
+					filho.atScore();//atualiza o score
+				}
+
+				if( pop.population[indice_pai1].score < filho.score){
+					//copia genes do filho para o pai
+					for (int k = 0; k < tam_genes; ++k){
+						pop.population[indice_pai1].cromossomo[k] = filho.cromossomo[k];
+					}
+					pop.population[indice_pai1].atScore();//atualiza o score
+
+				}
+			}
+
 		}
 		
 
