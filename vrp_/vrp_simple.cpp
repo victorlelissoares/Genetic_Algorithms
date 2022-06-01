@@ -124,7 +124,7 @@ void Individuo::atScore(){
 			// para "penalizar" a solução
 			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
 				score_fit *= (peso - capacity);
-				this->infeasibility += 1;
+				this->infeasibility += actual_car;
 			}
 			
 			// cout << score_fit << endl;
@@ -406,7 +406,11 @@ int main(int argc, char const *argv[]){
 		for (int i = 0; i < tam_torneio; i++){//implementa o torneio
 			
 			double prob = fRand(0, 1);
+<<<<<<< HEAD
 			//cout << "probabilidade: " << prob << endl;
+=======
+			cout << "probabilidade: " << prob << endl;
+>>>>>>> ccadaeb56839cc5ff78e820409dd4dfff9c69548
 			if(prob < prob_cruz){
 				
 				int indice_pai1;
