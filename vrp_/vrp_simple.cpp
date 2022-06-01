@@ -406,11 +406,7 @@ int main(int argc, char const *argv[]){
 		for (int i = 0; i < tam_torneio; i++){//implementa o torneio
 			
 			double prob = fRand(0, 1);
-<<<<<<< HEAD
 			//cout << "probabilidade: " << prob << endl;
-=======
-			cout << "probabilidade: " << prob << endl;
->>>>>>> ccadaeb56839cc5ff78e820409dd4dfff9c69548
 			if(prob < prob_cruz){
 				
 				int indice_pai1;
