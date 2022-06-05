@@ -1,4 +1,16 @@
-#include "population.h"
+#include "individuo.hpp"
+
+class Population{
+	public:
+		Population(); //construtor padrão
+		~Population(); //destrutor padrão
+		void printPopulation();
+		int indexBestScore();
+
+	//private:
+		vector<Individuo> population;
+
+};
 
 Population::Population(){
 	for (int i = 0; i < tam_pop; i++){
@@ -8,10 +20,6 @@ Population::Population(){
 	
 }
 
-Population::~Population(){
-	;
-}
-
 void Population::printPopulation(){
 	cout << "População" << endl;
 	for (int i = 0; i < tam_pop; i++){
@@ -19,4 +27,8 @@ void Population::printPopulation(){
 		this->population[i].printGenes();
 	}
 	cout << "Fim População" << endl;
+}
+
+Population::~Population(){
+	;
 }

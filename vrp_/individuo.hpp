@@ -1,20 +1,71 @@
-#include "individuo.h"
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+#include <time.h>
+#include <cmath>
+#include <random>
+#include <fstream>
+#include <string.h>
+#include<cstdlib>
+#include<ctime>
+#include<algorithm>
 
+using namespace std;
 
-Individuo::Individuo(){
-	int j = 2;
-	for (int i = 0; i < tam_genes; ++i){
-		double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
+// parâmetros do algoritmo genético
+int qtd_carros = 2;
 
-		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
-	}
-	this->infeasibility = 0;//diz se a solução é viável ou não
-	this->atScore(); // atualiza o score do individuo, ou seja, a distância total * pela inviabilidade
+int tam_genes = 0; // quantidade de genes
+
+int tam_pop = 10; // quantidade de indivíduos da população
+
+int tam_torneio = 20; // tamanho do torneio
+
+int geracoes = 1000; // quantidade de gerações
+
+double prob_mut = 0.2; // probabilidade de mutação
+
+double prob_cruz = 0.7; // probabilidade de cruzamento
+
+int selec_gene = 45;
+
+int capacity = 0;
+
+int depot = 0;
+
+vector< pair <int, int> > distance_vec;
+
+vector<int> demand_vec;
+
+//função para gerar números(double) aleatórios 
+double fRand(double fMin, double fMax){
+    double f = (double)rand() / RAND_MAX;
+    return fMin + f * (fMax - fMin);
 }
 
-Individuo::~Individuo(){
-    //destrutor
+inline double distEuclidiana(pair<int, int> cl1, pair<int, int>cl2){	
+	//( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
+ 	return sqrt( pow( (cl1.first - cl2.first), 2) + pow( (cl1.second - cl2.second), 2) );
 }
+
+class Individuo{
+	public:
+		Individuo();
+		~Individuo();
+		void atScore();
+		int returnScore();
+		void printGenes();
+		
+
+	//private:
+		//first correponde ao número do cliente e second a chave aleatória
+		vector< pair<int, double> > cromossomo;//vetor de genes
+		int score;//score do individuo, vai ser calculado através da distância euclidiana
+		int infeasibility;
+		void mutation(void (*type_mutation)(Individuo *indi));//mutação
+		void crossing(Individuo *pai1, Individuo *pai2, 
+		void (*type_crossing)(Individuo*, Individuo*, Individuo*));//operador de cruzamento, recebe a função de cruzamento como parâmetro
+};
 
 void Individuo::atScore(){
 	this->infeasibility = 0;
@@ -113,6 +164,20 @@ void Individuo::atScore(){
 	this->score = score_fit;
 	//cout << "Total Percorrido: " << score_fit << endl;
 	//cout << "Finaliza Função Score" << endl << endl;
+}
+
+Individuo::Individuo(){
+	int j = 2;
+	for (int i = 0; i < tam_genes; ++i){
+		double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
+
+		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
+	}
+	this->infeasibility = 0;//diz se a solução é viável ou não
+	this->atScore(); // atualiza o score do individuo, ou seja, a distância total * pela inviabilidade
+}
+
+Individuo::~Individuo(){
 }
 
 // boas chances de combinar boas características, independente de onde estejam no cromossomo

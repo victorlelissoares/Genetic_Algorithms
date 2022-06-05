@@ -1,112 +1,6 @@
-#include "population.h"
+#include "population.hpp"
 
-//função para gerar números(double) aleatórios 
-double fRand(double fMin, double fMax){
-    double f = (double)rand() / RAND_MAX;
-    return fMin + f * (fMax - fMin);
-}
-
-inline double distEuclidiana(pair<int, int> cl1, pair<int, int>cl2){	
-	//( (c1x - c2x)^2 + (c1y - c2y)^2 )^(1/2)
- 	return sqrt( pow( (cl1.first - cl2.first), 2) + pow( (cl1.second - cl2.second), 2) );
-}
-
-
-
-void read_file(){
-	ifstream myfile;
-	string myline;
-	char *line;
-	int i = 0;
-
-	myfile.open("toy.vrp");
-	getline(myfile, myline, '\n');//ignore name
-	getline(myfile, myline, '\n');//ignore comment
-	getline(myfile, myline, '\n');//ignore type
-	//lê a linha que especifica o número de clientes
-	getline(myfile, myline, '\n');//read dimension line
-	line = new char[myline.length()+1];
-	strcpy(line, myline.c_str());//transforma a linha lida em um char *
-	char *tok = strtok(line, " \n");
-	//cout << tok << endl;
-	tok = strtok(NULL, " \n");
-	//cout << tok << endl;
-	tok = strtok(NULL, " \n");
-	//cout << tok << endl;
-	string str;
-	str.assign(tok);
-	tam_genes = stoi(tok)-1;//considerando um único depósito
-	//cout << tam_genes << endl;
-	// int x = stoi(str);//coordenada x
-	
-	//lê a linha que especifica a capacidade dos carros
-	getline(myfile, myline, '\n');//read dimension line
-	line = new char[myline.length()+1];
-	strcpy(line, myline.c_str());//transforma a linha lida em um char *
-	tok = strtok(line, " \n");
-	//cout << tok << endl;
-	tok = strtok(NULL, " \n");
-	//cout << tok << endl;
-	tok = strtok(NULL, " \n");
-	//cout << tok << endl;
-	str.assign(tok);
-	capacity = stoi(tok);
-	//cout << capacity << endl;
-
-	//lê seção de coordenadas
-	getline(myfile, myline, '\n');//ignore node_coord section
-	while(1){
-		getline(myfile, myline, '\n');//pega a linha contendo as coordenadas
-		line = new char[myline.length()+1];
-		strcpy(line, myline.c_str());
-		if(myline.find("DEMAND_SECTION", 0) != string::npos){	
-			break;
-		}
-		
-		char *tok = strtok(line, " \n");
-		//cout << tok << endl;
-		tok = strtok(NULL, " \n");
-		string str;
-		str.assign(tok);
-		//cout << str << endl;
-		int x = stoi(str);//coordenada x
-		//cout << x << endl;
-
-		tok = strtok(NULL, " \n");
-		str.assign(tok);//coordenada y
-
-		distance_vec.push_back(make_pair(x, stoi(str)));//insere as cord. no vetor de distância
-
-		cout << "cord_x: " << distance_vec[i].first << " cord_y: " << distance_vec[i].second
-		<< endl;
-		
-		i++;
-	}
-	i = 0;
-	while (1){
-		getline(myfile, myline, '\n');//lê a 1 linha de demmand section
-		strcpy(line, myline.c_str());
-		// cout << "antes";
-		if(myline.find("DEPOT_SECTION", 0) != string::npos){	
-			// cout << "dentro" << endl;
-			break;
-		}
-		// cout << "depois";
-		char *tok = strtok(line, " \n");
-		int pos = stoi(tok);
-		cout << "client: " << pos << " ";
-		tok = strtok(NULL, " \n");
-		cout << " demand: " << stoi(tok) << endl;
-		demand_vec.push_back(stoi(tok));
-	}
-
-	//depot section
-	getline(myfile, myline, '\n');//lê deposito
-	depot = stoi(myline) - 1;
-	getline(myfile, myline, '\n');//lê fim dos depósitos
-	getline(myfile, myline, '\n');//lê o fim de um arquivo
-}
-
+void read_file();
 
 
 // Uma certa porcentagem das melhores soluções é mantida para a proxima geração(elitismo)
@@ -214,3 +108,100 @@ int main(int argc, char const *argv[]){
 	cout << endl;
 	return 0;
 }
+
+void read_file(){
+	ifstream myfile;
+	string myline;
+	char *line;
+	int i = 0;
+
+	myfile.open("toy.vrp");
+	getline(myfile, myline, '\n');//ignore name
+	getline(myfile, myline, '\n');//ignore comment
+	getline(myfile, myline, '\n');//ignore type
+	//lê a linha que especifica o número de clientes
+	getline(myfile, myline, '\n');//read dimension line
+	line = new char[myline.length()+1];
+	strcpy(line, myline.c_str());//transforma a linha lida em um char *
+	char *tok = strtok(line, " \n");
+	//cout << tok << endl;
+	tok = strtok(NULL, " \n");
+	//cout << tok << endl;
+	tok = strtok(NULL, " \n");
+	//cout << tok << endl;
+	string str;
+	str.assign(tok);
+	tam_genes = stoi(tok)-1;//considerando um único depósito
+	//cout << tam_genes << endl;
+	// int x = stoi(str);//coordenada x
+	
+	//lê a linha que especifica a capacidade dos carros
+	getline(myfile, myline, '\n');//read dimension line
+	line = new char[myline.length()+1];
+	strcpy(line, myline.c_str());//transforma a linha lida em um char *
+	tok = strtok(line, " \n");
+	//cout << tok << endl;
+	tok = strtok(NULL, " \n");
+	//cout << tok << endl;
+	tok = strtok(NULL, " \n");
+	//cout << tok << endl;
+	str.assign(tok);
+	capacity = stoi(tok);
+	//cout << capacity << endl;
+
+	//lê seção de coordenadas
+	getline(myfile, myline, '\n');//ignore node_coord section
+	while(1){
+		getline(myfile, myline, '\n');//pega a linha contendo as coordenadas
+		line = new char[myline.length()+1];
+		strcpy(line, myline.c_str());
+		if(myline.find("DEMAND_SECTION", 0) != string::npos){	
+			break;
+		}
+		
+		char *tok = strtok(line, " \n");
+		//cout << tok << endl;
+		tok = strtok(NULL, " \n");
+		string str;
+		str.assign(tok);
+		//cout << str << endl;
+		int x = stoi(str);//coordenada x
+		//cout << x << endl;
+
+		tok = strtok(NULL, " \n");
+		str.assign(tok);//coordenada y
+
+		distance_vec.push_back(make_pair(x, stoi(str)));//insere as cord. no vetor de distância
+
+		cout << "cord_x: " << distance_vec[i].first << " cord_y: " << distance_vec[i].second
+		<< endl;
+		
+		i++;
+	}
+	i = 0;
+	while (1){
+		getline(myfile, myline, '\n');//lê a 1 linha de demmand section
+		strcpy(line, myline.c_str());
+		// cout << "antes";
+		if(myline.find("DEPOT_SECTION", 0) != string::npos){	
+			// cout << "dentro" << endl;
+			break;
+		}
+		// cout << "depois";
+		char *tok = strtok(line, " \n");
+		int pos = stoi(tok);
+		cout << "client: " << pos << " ";
+		tok = strtok(NULL, " \n");
+		cout << " demand: " << stoi(tok) << endl;
+		demand_vec.push_back(stoi(tok));
+	}
+
+	//depot section
+	getline(myfile, myline, '\n');//lê deposito
+	depot = stoi(myline) - 1;
+	getline(myfile, myline, '\n');//lê fim dos depósitos
+	getline(myfile, myline, '\n');//lê o fim de um arquivo
+}
+
+
+
