@@ -19,7 +19,7 @@ int qtd_carros    = 2;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 10; // quantidade de indivíduos da população
+int tam_pop      = 100; // quantidade de indivíduos da população
 
 int tam_torneio  = 20; // tamanho do torneio
 

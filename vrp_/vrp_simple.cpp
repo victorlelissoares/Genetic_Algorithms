@@ -59,7 +59,7 @@ int main(int argc, char const *argv[]){
 				{
 					indice_pai1 = rand() % tam_pop;
 				} while (indice_pai1 >= 0 && indice_pai1 <= tam_elitismo-1);
-				cout << "Indice pai 1: " << indice_pai1 << endl;
+				//cout << "Indice pai 1: " << indice_pai1 << endl;
 				 
 				
 				int indice_pai2 = rand() % tam_pop;
@@ -68,15 +68,15 @@ int main(int argc, char const *argv[]){
 				while(indice_pai2 == indice_pai1 && (indice_pai2 >= 0 && indice_pai2 <= tam_elitismo-1)){
 					indice_pai2 = rand() % tam_pop;
 				}
-				cout << "Indice pai 2: " << indice_pai2 << endl;
+				//cout << "Indice pai 2: " << indice_pai2 << endl;
 				Individuo filho;
 
 				//filho.print_genes();
 				filho.crossing(&pop.population[indice_pai1], &pop.population[indice_pai2], &uniformCrossing);
 				filho.atScore();//atualiza o score do filho
 
-				cout << "Filho: ";
-				filho.printGenes();
+				//cout << "Filho: ";
+				//filho.printGenes();
 
 				double prob = fRand(0, 1);
 
@@ -86,13 +86,13 @@ int main(int argc, char const *argv[]){
 				}
 
 				if( pop.population[indice_pai1].score > filho.score){  
-					cout << "pai antes: ";
+					//cout << "pai antes: ";
 					pop.population[indice_pai1].printGenes();
 					//copia genes do filho para o pai
 					for (int k = 0; k < tam_genes; ++k){
 						pop.population[indice_pai1].cromossomo[k] = filho.cromossomo[k];
 					}
-					cout << "pai depois: ";
+					//cout << "pai depois: ";
 					pop.population[indice_pai1].atScore();//atualiza o score
 					pop.population[indice_pai1].printGenes();
 
@@ -100,7 +100,7 @@ int main(int argc, char const *argv[]){
 			}
 
 		}
-		
+		cout << endl;
 
 	}
 	cout << endl;
