@@ -1,4 +1,4 @@
-// Contem a função population e seus respectivos métodos e funções auxiliares
+// Contem a classe population e seus respectivos métodos e funções auxiliares
 #include "individuo.hpp"
 
 class Population{
