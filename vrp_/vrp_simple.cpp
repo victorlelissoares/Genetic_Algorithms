@@ -1,17 +1,23 @@
 #include "population.hpp"
 
-void read_file();
+void read_file(string file_);
 
 
 // Uma certa porcentagem das melhores soluções é mantida para a proxima geração(elitismo)
 // Uma taxa de mutação bastante alta é usada para manter a diversidade
 // e por fim, o restante da população é produzido por reprodução
 int main(int argc, char const *argv[]){
-	read_file();
+	
+	if(argc < 2){
+		cout << "error:./vrp arquivo_entrada" << endl;
+		exit(0);
+	}
+	
+	read_file(argv[1]);
 	srand(time(0));
 	Population pop;
 	Individuo teste;
-	
+
 	//pop.printPopulation();
 
 	// teste de cruzamento
@@ -109,13 +115,13 @@ int main(int argc, char const *argv[]){
 	return 0;
 }
 
-void read_file(){
+void read_file(string file){
 	ifstream myfile;
 	string myline;
 	char *line;
 	int i = 0;
 
-	myfile.open("toy.vrp");
+	myfile.open(file);
 	getline(myfile, myline, '\n');//ignore name
 	getline(myfile, myline, '\n');//ignore comment
 	getline(myfile, myline, '\n');//ignore type
