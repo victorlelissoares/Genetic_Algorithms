@@ -19,7 +19,7 @@ int qtd_carros    = 2;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 100; // quantidade de indivíduos da população
+int tam_pop     = 100; // quantidade de indivíduos da população
 
 int tam_torneio  = 20; // tamanho do torneio
 
@@ -27,13 +27,13 @@ int geracoes  =  1000; // quantidade de gerações
 
 double prob_mut = 0.2; // probabilidade de mutação
 
-double prob_cruz = 0.7; // probabilidade de cruzamento
+double prob_cruz= 0.7; // probabilidade de cruzamento
 
-int selec_gene    = 45;
+int selec_gene   = 45;
 
-int capacity       = 0;
+int capacity      = 0;
 
-int depot          = 0;
+int depot         = 0;
 
 vector< pair <int, int> > distance_vec;
 

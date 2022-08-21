@@ -141,6 +141,9 @@ void read_file(string file){
 	//cout << tam_genes << endl;
 	// int x = stoi(str);//coordenada x
 	
+	//ignora EDGE_WEIGHT_TYPE : EUC_2D 
+	getline(myfile, myline, '\n');//ignore name
+
 	//lê a linha que especifica a capacidade dos carros
 	getline(myfile, myline, '\n');//read dimension line
 	line = new char[myline.length()+1];
