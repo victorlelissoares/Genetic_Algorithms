@@ -2,7 +2,6 @@
 
 void read_file(string file_);
 
-
 // Uma certa porcentagem das melhores soluções é mantida para a proxima geração(elitismo)
 // Uma taxa de mutação bastante alta é usada para manter a diversidade
 // e por fim, o restante da população é produzido por reprodução
@@ -32,8 +31,8 @@ int main(int argc, char const *argv[]){
 	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
 	// filho.printGenes();
 	
-	//Para que o cruzamento seja aplicado, os "pais" devem ser selecionados
-	//Há vários procedimentos de seleção, dentre eles: Seleção por Roleta e a Seleção por Torneio 
+	// Para que o cruzamento seja aplicado, os "pais" devem ser selecionados
+	// Há vários procedimentos de seleção, dentre eles: Seleção por Roleta e a Seleção por Torneio 
 	// No procedimento de seleção por torneio, sorteiam-se dois indivíduos ao acaso, 
 	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
 	// cada indivíduo a ser selecionado.
@@ -210,7 +209,8 @@ void read_file(string file){
 	depot = stoi(myline) - 1;
 	getline(myfile, myline, '\n');//lê fim dos depósitos
 	getline(myfile, myline, '\n');//lê o fim de um arquivo
+
+	cout << "K = " << qtd_carros << endl;
+	cout << "C = " << capacity << endl;
+	cout << "depot = " << depot << endl;
 }
-
-
-

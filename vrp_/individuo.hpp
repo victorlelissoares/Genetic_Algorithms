@@ -15,15 +15,15 @@
 using namespace std;
 
 // parâmetros do algoritmo genético
-int qtd_carros    = 2;
+int qtd_carros    = 5;
 
 int tam_genes     = 0; // quantidade de genes
 
 int tam_pop     = 100; // quantidade de indivíduos da população
 
-int tam_torneio  = 20; // tamanho do torneio
+int tam_torneio  = 200; // tamanho do torneio
 
-int geracoes  =  1000; // quantidade de gerações
+int geracoes  =  5000; // quantidade de gerações
 
 double prob_mut = 0.2; // probabilidade de mutação
 
@@ -40,7 +40,7 @@ vector< pair <int, int> > distance_vec;
 vector<int> demand_vec;
 
 //função para gerar números(double) aleatórios 
-double fRand(double fMin, double fMax){
+inline double fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
@@ -126,13 +126,16 @@ void Individuo::atScore(){
 			// para "penalizar" a solução
 			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
 				score_fit *= (peso - capacity);
-				this->infeasibility += actual_car;
+				// this->infeasibility += actual_car;
+				this->infeasibility += 1;
 			}
 			
 			// cout << score_fit << endl;
 			//cout << "Total Percorrido com penalização: " << score_fit << endl;
+
 			// após isso, significa que o próximo cliente, será visitado por outro caminhão
 			// então, o mesmo deve sair do depósito
+
 			//cout << "Veículo " <<(int)v[i].second << " saindo do depósito" << endl;
 			//cout << "1" << " e " << indi_2+1 << "; ";
 			//cout << distEuclidiana(distance_vec[0], distance_vec[indi_2]) << endl;
