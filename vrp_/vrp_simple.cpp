@@ -37,14 +37,14 @@ int main(int argc, char const *argv[]){
 	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
 	// cada indivíduo a ser selecionado.
 
-	pop.printPopulation();
+	//pop.printPopulation();
 	sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
               return lhs.score < rhs.score; } );
-	pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
+	//pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
 
-	cout<<endl;
+	//cout << endl;
 	for(int numGeracoes = 0; numGeracoes < geracoes; numGeracoes++){
-		cout << "Geração " << numGeracoes << endl;
+		//cout << "Geração " << numGeracoes << endl;
 		sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
               return lhs.score < rhs.score; } );
 		pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
@@ -92,25 +92,35 @@ int main(int argc, char const *argv[]){
 
 				if( pop.population[indice_pai1].score > filho.score){  
 					//cout << "pai antes: ";
-					pop.population[indice_pai1].printGenes();
+					//pop.population[indice_pai1].printGenes();
 					//copia genes do filho para o pai
 					for (int k = 0; k < tam_genes; ++k){
 						pop.population[indice_pai1].cromossomo[k] = filho.cromossomo[k];
 					}
 					//cout << "pai depois: ";
 					pop.population[indice_pai1].atScore();//atualiza o score
-					pop.population[indice_pai1].printGenes();
+					//pop.population[indice_pai1].printGenes();
 
 				}
 			}
 
 		}
-		cout << endl;
+		//cout << endl;
 
 	}
 	cout << endl;
-	pop.printPopulation();
+	//pop.printPopulation();
 	cout << endl;
+
+	// cout << "Melhor Individuo: " << endl;
+	// pop.population[0].printGenes();
+	
+	int value = pop.population[0].score;
+
+	//int referenceValue;
+	cout << value << " "<< pop.population[0].infeasibility << endl;
+	
+
 	return 0;
 }
 

@@ -15,21 +15,21 @@
 using namespace std;
 
 // parâmetros do algoritmo genético
-int qtd_carros    = 5;
+int qtd_carros    = 2;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop     = 100; // quantidade de indivíduos da população
+int tam_pop      = 1000; // quantidade de indivíduos da população
 
-int tam_torneio  = 200; // tamanho do torneio
+int tam_torneio  = 20; // tamanho do torneio
 
-int geracoes  =  5000; // quantidade de gerações
+int geracoes  =  100; // quantidade de gerações
 
-double prob_mut = 0.2; // probabilidade de mutação
+double prob_mut = 0.8; // probabilidade de mutação
 
 double prob_cruz= 0.7; // probabilidade de cruzamento
 
-int selec_gene   = 45;
+int selec_gene   = 60;
 
 int capacity      = 0;
 
@@ -70,6 +70,7 @@ class Individuo{
 };
 
 void Individuo::atScore(){
+	int peso_penality = 0;
 	this->infeasibility = 0;
 	//cout << endl << "Função Atualiza Score" << endl;
 	vector<pair<int, double>> v = this->cromossomo;
@@ -99,7 +100,7 @@ void Individuo::atScore(){
 		//cout << distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]) << endl;;
 		
 		indi_1 = indi_2;
-		peso+= demand_vec[indi_1];
+		peso += demand_vec[indi_1];
 		// cout << "Peso a ser adicionado: " << demand_vec[indi_1] <<
 		// "; Peso até então: " << peso << endl;
 		i++;
@@ -125,7 +126,8 @@ void Individuo::atScore(){
 			// caso sim, multiplicamos o quanto foi excedido
 			// para "penalizar" a solução
 			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
-				score_fit *= (peso - capacity);
+				peso_penality += (peso - capacity);
+				//score_fit += (peso - capacity);
 				// this->infeasibility += actual_car;
 				this->infeasibility += 1;
 			}
@@ -156,7 +158,8 @@ void Individuo::atScore(){
 			//cout << distEuclidiana(distance_vec[indi_1], distance_vec[0]) << endl;
 			score_fit+=distEuclidiana(distance_vec[indi_1], distance_vec[0]);
 			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
-				score_fit *= (peso - capacity);
+				peso_penality += (peso - capacity);
+				//score_fit += (peso - capacity);
 				this->infeasibility += 1;
 			}
 			// cout << score_fit << endl;
@@ -165,11 +168,20 @@ void Individuo::atScore(){
 		}
 
 	}
+	peso_penality = pow(peso_penality, 4);
+	this->score = score_fit + peso_penality;
 	
 	this->score = score_fit;
 	//cout << "Total Percorrido: " << score_fit << endl;
 	//cout << "Finaliza Função Score" << endl << endl;
 }
+
+/*Penalizar inviabilidade
+O método de cálculo da adequação da solução foi o primeiro procedimento testado para observar 
+o efeito que isso teria nos resultados. 
+O primeiro método de penalização tentado foi penalizar cada solução inviável, 
+atribuindo seu custo a um grande valor.
+*/
 
 Individuo::Individuo(){
 	int j = 2;
