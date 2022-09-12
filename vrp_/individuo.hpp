@@ -15,11 +15,11 @@
 using namespace std;
 
 // parâmetros do algoritmo genético
-int qtd_carros    = 2;
+int qtd_carros    = 5;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 1000; // quantidade de indivíduos da população
+int tam_pop      = 100; // quantidade de indivíduos da população
 
 int tam_torneio  = 20; // tamanho do torneio
 
@@ -102,11 +102,11 @@ void Individuo::atScore(){
 		indi_1 = indi_2;
 		peso += demand_vec[indi_1];
 		// cout << "Peso a ser adicionado: " << demand_vec[indi_1] <<
-		// "; Peso até então: " << peso << endl;
+		//  "; Peso até então: " << peso << endl;
 		i++;
 		indi_2 = v[i].first-1;
 		// cout << "atual: " << indi_1+1 << endl;
-		//cout << "prox: " << indi_2+1 << endl;
+		// cout << "prox: " << indi_2+1 << endl;
 
 		//significa que trocou de carro
 		//ou seja, outra rota
@@ -125,8 +125,8 @@ void Individuo::atScore(){
 			// não excedeu o quanto o caminhão pode levar
 			// caso sim, multiplicamos o quanto foi excedido
 			// para "penalizar" a solução
-			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
-				peso_penality += (peso - capacity);
+			if(peso > capacity){//significa que a capacidade do caminhão foi ultrapassada
+				//peso_penality += (peso - capacity);
 				//score_fit += (peso - capacity);
 				// this->infeasibility += actual_car;
 				this->infeasibility += 1;
@@ -157,8 +157,8 @@ void Individuo::atScore(){
 			//cout << indi_1+1 << " e " << "1" << "; " ;
 			//cout << distEuclidiana(distance_vec[indi_1], distance_vec[0]) << endl;
 			score_fit+=distEuclidiana(distance_vec[indi_1], distance_vec[0]);
-			if(peso - capacity > 0){//significa que a capacidade do caminhão foi ultrapassada
-				peso_penality += (peso - capacity);
+			if(peso > capacity){//significa que a capacidade do caminhão foi ultrapassada
+				//peso_penality += (peso - capacity);
 				//score_fit += (peso - capacity);
 				this->infeasibility += 1;
 			}
@@ -175,7 +175,6 @@ void Individuo::atScore(){
 	//cout << "Total Percorrido: " << score_fit << endl;
 	//cout << "Finaliza Função Score" << endl << endl;
 }
-
 /*Penalizar inviabilidade
 O método de cálculo da adequação da solução foi o primeiro procedimento testado para observar 
 o efeito que isso teria nos resultados. 
@@ -190,11 +189,13 @@ Individuo::Individuo(){
 
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
+	this->score = 0;
 	this->infeasibility = 0;//diz se a solução é viável ou não
 	this->atScore(); // atualiza o score do individuo, ou seja, a distância total * pela inviabilidade
 }
 
 Individuo::~Individuo(){
+
 }
 
 // boas chances de combinar boas características, independente de onde estejam no cromossomo
@@ -238,8 +239,8 @@ void Individuo::mutation(void(*type_mutation)(Individuo *indi)){
 
 void Individuo::printGenes(){
 	for(auto i: this->cromossomo){
-		//cout << "Cliente: " << i.first << " " << i.second << " ";
-		cout << i.second << " ";
+		cout << "Cliente: " << i.first << " " << i.second << " ";
+		//cout << i.second << " ";
 	}
 	cout << "; Fit: " << this->score;
 	cout << " ; Inviavel? " << this->infeasibility;

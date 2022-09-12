@@ -16,17 +16,31 @@ int main(int argc, char const *argv[]){
 	srand(time(0));
 	Population pop;
 	Individuo teste;
+	//teste.cromossomo.clear();
 
+	//cout << "DESTROYED!!!!\n\n\n\n\n\n";
+	
+	sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
+              return lhs.score < rhs.score; } );
 	//pop.printPopulation();
 
-	// teste de cruzamento
+	// teste.cromossomo.push_back(make_pair(5, 1.10441));
+	// teste.cromossomo.push_back(make_pair(4, 2.35836));
+	// teste.cromossomo.push_back(make_pair(2, 2.6801));
+	// teste.cromossomo.push_back(make_pair(3, 2.73576));
+	// teste.cromossomo.push_back(make_pair(6, 2.7495));
+
+	// teste.atScore();
+	// teste.printGenes();
+
+	// //teste de cruzamento
 	// teste = pop.population[2];
 	// teste.printGenes();
 	// teste.mutation(&imigracaoMutation);
 	// teste.printGenes();
 	// teste.atScore();
 
-	// teste de reprodução
+	// //teste de reprodução
 	// Individuo filho;
 	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
 	// filho.printGenes();
@@ -37,12 +51,12 @@ int main(int argc, char const *argv[]){
 	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
 	// cada indivíduo a ser selecionado.
 
-	//pop.printPopulation();
+	pop.printPopulation();
 	sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
               return lhs.score < rhs.score; } );
-	//pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
+	pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
 
-	//cout << endl;
+	cout << endl;
 	for(int numGeracoes = 0; numGeracoes < geracoes; numGeracoes++){
 		//cout << "Geração " << numGeracoes << endl;
 		sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
@@ -109,7 +123,7 @@ int main(int argc, char const *argv[]){
 
 	}
 	cout << endl;
-	//pop.printPopulation();
+	pop.printPopulation();
 	cout << endl;
 
 	// cout << "Melhor Individuo: " << endl;
