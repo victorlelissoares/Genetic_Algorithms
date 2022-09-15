@@ -7,21 +7,24 @@ void read_file(string file_);
 // e por fim, o restante da população é produzido por reprodução
 int main(int argc, char const *argv[]){
 	
-	if(argc < 2){
-		cout << "error:./vrp arquivo_entrada" << endl;
+	if(argc < 3){
+		cout << "error:./vrp arquivo_entrada K" << endl;
 		exit(0);
 	}
 	
+	qtd_carros = atoi(argv[2]);
 	read_file(argv[1]);
 	srand(time(0));
 	Population pop;
+	
 	Individuo teste;
-	//teste.cromossomo.clear();
 
+	//teste.cromossomo.clear();
+	return 0;
 	//cout << "DESTROYED!!!!\n\n\n\n\n\n";
 	
-	sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
-              return lhs.score < rhs.score; } );
+	// sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
+    //           return lhs.score < rhs.score; } );
 	//pop.printPopulation();
 
 	// teste.cromossomo.push_back(make_pair(5, 1.10441));
@@ -51,18 +54,17 @@ int main(int argc, char const *argv[]){
 	// comparam-se suas aptidões e o mais apto destes dois é selecionado. Este procedimento é repetido para
 	// cada indivíduo a ser selecionado.
 
-	pop.printPopulation();
-	sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
-              return lhs.score < rhs.score; } );
-	pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
+	//pop.printPopulation();
+	// sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
+    //           return lhs.score < rhs.score; } );
+	//pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
 
-	cout << endl;
+	//cout << endl;
 	for(int numGeracoes = 0; numGeracoes < geracoes; numGeracoes++){
 		//cout << "Geração " << numGeracoes << endl;
 		sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
-              return lhs.score < rhs.score; } );
-		pop.printPopulation();//ordena população com base no seu score, para selecionar os melhores individuos
-		
+               return lhs.score < rhs.score; } );
+		//pop.printPopulation();
 		int tam_elitismo = rand() % tam_pop / 2;//define quantos "melhores elementos" serão mantidos
 		//cout << "elitismo: " << tam_elitismo << endl;
 
@@ -74,8 +76,7 @@ int main(int argc, char const *argv[]){
 			if(prob < prob_cruz){
 				
 				int indice_pai1;
-				do
-				{
+				do{
 					indice_pai1 = rand() % tam_pop;
 				} while (indice_pai1 >= 0 && indice_pai1 <= tam_elitismo-1);
 				//cout << "Indice pai 1: " << indice_pai1 << endl;
@@ -87,15 +88,10 @@ int main(int argc, char const *argv[]){
 				while(indice_pai2 == indice_pai1 && (indice_pai2 >= 0 && indice_pai2 <= tam_elitismo-1)){
 					indice_pai2 = rand() % tam_pop;
 				}
-				//cout << "Indice pai 2: " << indice_pai2 << endl;
+				
 				Individuo filho;
-
-				//filho.print_genes();
 				filho.crossing(&pop.population[indice_pai1], &pop.population[indice_pai2], &uniformCrossing);
 				filho.atScore();//atualiza o score do filho
-
-				//cout << "Filho: ";
-				//filho.printGenes();
 
 				double prob = fRand(0, 1);
 
@@ -103,37 +99,32 @@ int main(int argc, char const *argv[]){
 					filho.mutation(&imigracaoMutation);
 					filho.atScore();//atualiza o score
 				}
+				
+				int max_pai;
 
-				if( pop.population[indice_pai1].score > filho.score){  
-					//cout << "pai antes: ";
-					//pop.population[indice_pai1].printGenes();
-					//copia genes do filho para o pai
-					for (int k = 0; k < tam_genes; ++k){
-						pop.population[indice_pai1].cromossomo[k] = filho.cromossomo[k];
+				if(pop.population[indice_pai1].score > pop.population[indice_pai2].score){
+					max_pai = indice_pai1;
+				}
+				else{
+					max_pai = indice_pai2;
+				}
+
+				if(pop.population[max_pai].score > filho.score){  
+					
+					for (int k = 0; k < tam_genes; k++){
+						pop.population[max_pai].cromossomo[k] = filho.cromossomo[k];
 					}
-					//cout << "pai depois: ";
-					pop.population[indice_pai1].atScore();//atualiza o score
-					//pop.population[indice_pai1].printGenes();
-
+					
+					pop.population[max_pai].atScore();
 				}
 			}
 
 		}
-		//cout << endl;
-
 	}
+	
 	cout << endl;
 	pop.printPopulation();
 	cout << endl;
-
-	// cout << "Melhor Individuo: " << endl;
-	// pop.population[0].printGenes();
-	
-	int value = pop.population[0].score;
-
-	//int referenceValue;
-	cout << value << " "<< pop.population[0].infeasibility << endl;
-	
 
 	return 0;
 }
@@ -143,6 +134,7 @@ void read_file(string file){
 	string myline;
 	char *line;
 	int i = 0;
+
 
 	myfile.open(file);
 	getline(myfile, myline, '\n');//ignore name

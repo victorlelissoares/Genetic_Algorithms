@@ -27,7 +27,7 @@ class Individuo{
 
 	//private:
 		vector<int> genes;//vetor de genes
-		int score;//score do individuo
+		double score;//score do individuo
 		void mutation();//mutação
 		void crossing(Individuo pai1, Individuo pai2);//operador de cruzamento
 };

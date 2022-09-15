@@ -6,7 +6,8 @@ class Population{
 		Population(); //construtor padrão
 		~Population(); //destrutor padrão
 		void printPopulation();
-		int indexBestScore();
+		//int indexBestScore();
+		//Individuo best;
 
 	//private:
 		vector<Individuo> population;
