@@ -48,7 +48,7 @@ class Individuo{
 	public:
 		Individuo();
 		~Individuo();
-		void atScore();
+		void atScore(int repair);
 		int returnScore();
 		void printGenes();
 		void mutation(void (*type_mutation)(Individuo *indi));//mutação
@@ -57,14 +57,14 @@ class Individuo{
 
 		//first correponde ao número do cliente e second a chave aleatória
 		vector< pair<int, double> > cromossomo;//vetor de genes
-		vector<pair<int, int>> limits_route;//diz onde começa e termina uma rota de um K dentro do cromossomo
+		vector<thrair<int, int, int>> limits_route;//diz onde começa e termina uma rota de um K dentro do cromossomo
 		double score;//score do individuo, vai ser calculado através da distância euclidiana+penalidade
 		double real_score;
 		int infeasibility;
 		
 };
-
-void Individuo::atScore(){
+void Individuo::atScore(int repair){
+	vector<thrair<int, double, int>> rejectClients;
 	infeasibility = 0;
 	int peso_penality   = 0;
 	//vector<pair<int, double>> v = this->cromossomo;
@@ -87,11 +87,20 @@ void Individuo::atScore(){
 	
 	while ( i < tam_genes){
 		//cout << "i: "<<  i << endl;
-		score_fit +=  distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+		if(peso + demand_vec[indi_2] > capacity){
+			
+			rejectClients.push_back({this->cromossomo[i].first, this->cromossomo[i].second, i});
+
+		}
+		else{
+			score_fit +=  distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);	
+			peso += demand_vec[indi_2];
+		}
+		//score_fit +=  distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
 		
 		indi_1 = indi_2;
-		peso += demand_vec[indi_1];
-		
+		//peso += demand_vec[indi_2];
 		i++;
 		indi_2 = this->cromossomo[i].first-1;
 		//cout << "indi2: " << indi_2;
@@ -106,7 +115,7 @@ void Individuo::atScore(){
 			
 			final_route = i - 1;
 			//cout << "ini: " << init_route << " fi: " << final_route << endl;
-			limits_route.push_back(make_pair(init_route, final_route));
+			limits_route.push_back({init_route, final_route, peso});
 			init_route = i;
 			
 			//após retornar o depósito, checamos se aquela rota
@@ -132,13 +141,13 @@ void Individuo::atScore(){
 			indi_2 = this->cromossomo[i].first-1;
 		}
 		//cout << "i: "<<  i << endl;
-		if(i >= tam_genes){//fim da linha
+		if(i >= (int)this->cromossomo.size()){//fim da linha
 			//cout << "cabo porra" << endl;
 			// quer dizer que terminaram as entregas
 			// então o caminhão atual deve retornar ao depósito
 			final_route = i-1;
 			//cout << "ini: " << init_route << " fi: " << final_route << endl;
-			limits_route.push_back(make_pair(init_route, final_route));
+			limits_route.push_back({init_route, final_route, peso});
 
 			score_fit += distEuclidiana(distance_vec[indi_1], distance_vec[0]);
 			if(peso > capacity){//significa que a capacidade do caminhão foi ultrapassada
@@ -152,6 +161,14 @@ void Individuo::atScore(){
 
 	this->real_score = score_fit;//distância euclidiana efetivamente percorrida
 	this->score = score_fit + (pow(peso_penality, 2.)) * infeasibility;
+
+	cout << "Removidos : ";
+	for (auto i:rejectClients){
+		vector<pair< int, double>>::iterator it = cromossomo.begin() + i.third;//calcula posição do iterador
+		this->cromossomo.erase(it);
+		cout << i.first << " " << i.second << " " << i.third << endl;
+	}
+	
 	
 }
 /*Penalizar inviabilidade
@@ -171,13 +188,12 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 	
 	double prob = fRand(0, 1);
 	
-	// if(prob_repair > prob){//então tem que reparar o cromossomo
-	// 	this->atScore(1); // atualiza o score do individuo
+	//if(prob_repair > prob){//então tem que reparar o cromossomo
+		this->atScore(1); // atualiza o score do individuo
 	// }
 	// else{
 	// 	this->atScore(0); // atualiza o score do individuo
 	// }
-	atScore();
 }
 
 Individuo::~Individuo(){

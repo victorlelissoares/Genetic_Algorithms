@@ -3,6 +3,13 @@
 
 using namespace std;
 
+template <typename a, typename b, typename c> struct thrair{
+	a first;
+	b second;
+	c third;
+};
+
+
 //função para gerar números(double) aleatórios 
 inline double fRand(double fMin, double fMax){
     return fMin + ((double)rand() / RAND_MAX) * (fMax - fMin);

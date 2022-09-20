@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]){
 	//teste.atScore();
 	teste.printGenes();
 	for (auto i:teste.limits_route){
-		cout << i.first << " " << i.second << endl;
+		cout << i.first << " " << i.second << " " << i.third << endl;
 	}
 	
 
