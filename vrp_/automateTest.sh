@@ -1,13 +1,17 @@
 #!/bin/bash
-#benchmarkName num_test
-g++ *.cpp -o vrp_simple -Wall -O3 
+
+g++ *.cpp -o vrp_simple -O3 
 
 
 #executa n vezes o programa
-for i in {0..$3-1}
+for (( i = 1; i <= $1; i++))
     do
-    ./vrp_simple benchmarks/$1 $2 $3 #recebe a saida do programa, que é o fit
+    value_obtined = $(./vrp_simple benchmarks/$2 $3) #recebe a saida do programa, que é o fit
+    
+    gap = $[[100 * [$4 - $value_obtined] / $4] + $gap]
 done
+
+
 
 
 

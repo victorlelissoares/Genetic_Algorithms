@@ -7,7 +7,7 @@ class Population{
 		~Population(); //destrutor padrão
 		void printPopulation();
 		//int indexBestScore();
-		//Individuo best;
+		Individuo best;
 
 	//private:
 		vector<Individuo> population;
@@ -15,9 +15,17 @@ class Population{
 };
 
 Population::Population(){
+	this->best.score = INT32_MAX;
+
 	for (int i = 0; i < tam_pop; i++){
 		Individuo indi;
 		this->population.push_back(indi);
+
+		if(indi.score <= best.score and indi.infeasibility == 0){
+			best.score = indi.score;
+			best.real_score = indi.real_score;
+			best.cromossomo = indi.cromossomo;
+		}
 	}
 	
 }

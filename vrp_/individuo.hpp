@@ -21,9 +21,9 @@ int tam_genes     = 0; // quantidade de genes
 
 int tam_pop      = 100; // quantidade de indivíduos da população
 
-int tam_torneio  = 100; // tamanho do torneio
+int tam_torneio  = 10; // tamanho do torneio
 
-int geracoes  =  2500; // quantidade de gerações
+int geracoes  =  100; // quantidade de gerações
 
 double prob_mut = 0.8; // probabilidade de mutação
 
@@ -49,6 +49,7 @@ class Individuo{
 		Individuo();
 		~Individuo();
 		void atScore(int repair);
+		void reparationCromossome(vector<thrair<int, double, int>>);//repara o cromossomo reinserindo quem é inviavel
 		int returnScore();
 		void printGenes();
 		void mutation(void (*type_mutation)(Individuo *indi));//mutação
@@ -57,12 +58,70 @@ class Individuo{
 
 		//first correponde ao número do cliente e second a chave aleatória
 		vector< pair<int, double> > cromossomo;//vetor de genes
-		vector<thrair<int, int, int>> limits_route;//diz onde começa e termina uma rota de um K dentro do cromossomo
+		vector<thrair<int, int, int>> limits_route;//diz onde começa e termina uma rota de um K 
+		//e o peso que atualmente aquela rota possui
 		double score;//score do individuo, vai ser calculado através da distância euclidiana+penalidade
 		double real_score;
 		int infeasibility;
 		
 };
+
+												   //contém o cliente 
+void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsClients){
+	
+	//limits_rotes contém respectivamente, onde começa e termina a rota no vetor e o peso que aquela rota tem
+	//rejectClients contém o cliente em si(int, double) e de onde ele foi retirado
+
+	//k rotas, cada uma com um intMAX , e o indice do cliente rejeitado
+	vector< pair<int, int> >min_insert(qtd_carros, make_pair(-1, INT_FAST32_MAX) );
+
+
+	// for (auto i:limits_route){
+
+	// 	for (auto k:rejectsClients){
+	// 		//verifica se cabe naquela rota, caso caiba, vamos inserir direto
+	// 		if( (capacity - i.third) >= demand_vec[k.first-1]){
+	// 			cout << "cabe no veículo " << j+1 << ": " << (capacity - i.third) << " e foi colocado"
+	// 			<< " " << demand_vec[k.first-1] << endl;
+
+	// 			//vai inserir na rota e ver se está tudo certo
+
+				
+	// 		}
+	// 	}
+	// 	j++;
+	// }
+
+	for (int i = 0; i < (int)rejectsClients.size(); i++){
+
+		for (int j = 0; j < (int)limits_route.size(); j++){
+			cout << "rejectsClient " << rejectsClients[i].first <<
+			" demand_vec " << demand_vec[rejectsClients[i].first-1] <<endl;
+			
+			printf("\nmin[%d].second = %d\n", i, min_insert[i].second);
+			
+			printf("\n((demand_vec[%d]+limits_route[j].third) - capacity) =  %d\n",
+			rejectsClients[i].first-1,
+			((demand_vec[rejectsClients[i].first-1]+limits_route[j].third) - capacity));
+
+			if(min_insert[i].second >= ((demand_vec[rejectsClients[i].first-1]+limits_route[j].third) - capacity) ){
+				cout << "entrei" << endl;
+				min_insert[i].first = j;//indice do rejectClient
+				min_insert[i].second = (demand_vec[rejectsClients[i].first-1]+limits_route[j].third) - capacity;//cálculo
+			}
+
+		}
+		printf("\nmin_insert[%d].first = %d\n", i, min_insert[i].first);
+		printf("rejectsClients[%d].first-1 = %d\n", min_insert[i].first, rejectsClients[min_insert[i].first].first-1);
+		printf("demand_vec[%d] = %d\n", rejectsClients[min_insert[i].first].first-1, demand_vec[rejectsClients[min_insert[i].first].first-1]);
+		limits_route[i].third += demand_vec[rejectsClients[min_insert[i].first].first-1];
+		cout << limits_route[i].first << " " << limits_route[i].second << " " << limits_route[i].third << endl;
+	}
+	
+	
+	
+}
+
 void Individuo::atScore(int repair){
 	vector<thrair<int, double, int>> rejectClients;
 	infeasibility = 0;
@@ -87,9 +146,9 @@ void Individuo::atScore(int repair){
 	
 	while ( i < tam_genes){
 		//cout << "i: "<<  i << endl;
-
-		if(peso + demand_vec[indi_2] > capacity){
-			
+		
+		if(peso + demand_vec[indi_2] > capacity and repair){
+			//cliente e indice de onde foi removido do vetor
 			rejectClients.push_back({this->cromossomo[i].first, this->cromossomo[i].second, i});
 
 		}
@@ -161,13 +220,22 @@ void Individuo::atScore(int repair){
 
 	this->real_score = score_fit;//distância euclidiana efetivamente percorrida
 	this->score = score_fit + (pow(peso_penality, 2.)) * infeasibility;
+	
+	if (repair){
+			for (auto k:limits_route){
+			cout << k.first << " " << k.second << " " << k.third << endl;
+		}
 
-	cout << "Removidos : ";
-	for (auto i:rejectClients){
-		vector<pair< int, double>>::iterator it = cromossomo.begin() + i.third;//calcula posição do iterador
-		this->cromossomo.erase(it);
-		cout << i.first << " " << i.second << " " << i.third << endl;
+		cout << "Removidos : ";
+		for (auto i:rejectClients){
+			vector<pair< int, double>>::iterator it = cromossomo.begin() + i.third;//calcula posição do iterador
+			this->cromossomo.erase(it);
+			cout << i.first << " " << i.second << " " << i.third << endl;
+		}
+		cout << endl;
+		this->reparationCromossome(rejectClients);
 	}
+	
 	
 	
 }
@@ -182,14 +250,14 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 	int j = 2;
 	for (int i = 0; i < tam_genes; ++i){
 		double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
-
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
 	
 	double prob = fRand(0, 1);
 	
 	//if(prob_repair > prob){//então tem que reparar o cromossomo
-		this->atScore(1); // atualiza o score do individuo
+		this->atScore(0); // atualiza o score do individuo
+
 	// }
 	// else{
 	// 	this->atScore(0); // atualiza o score do individuo
