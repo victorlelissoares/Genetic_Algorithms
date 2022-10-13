@@ -18,7 +18,14 @@ int main(int argc, char const *argv[]){
 	//Population pop;
 	
 	//teste de reparação de cromossomo
+	double v[]={2.69419,2.88349,2.80162,2.94151,2.84382};
+	
 	Individuo teste;
+	teste.atScore(1);
+	teste.printGenes();
+	cout <<"pós at1" << endl;
+	teste.atScore(0);
+	cout <<"pós at0" << endl;
 	teste.printGenes();
 	
 

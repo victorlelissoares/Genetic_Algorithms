@@ -47,6 +47,7 @@ vector<int> demand_vec;
 class Individuo{
 	public:
 		Individuo();
+		Individuo(double v[]);
 		~Individuo();
 		void atScore(int repair);
 		void reparationCromossome(vector<thrair<int, double, int>>);//repara o cromossomo reinserindo quem é inviavel
@@ -68,40 +69,7 @@ class Individuo{
 
 												   //contém o cliente 
 void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsClients){
-	//auto cpRoutes = limits_route;
-	//limits_rotes contém respectivamente, onde começa e termina a rota no vetor e o peso que aquela rota tem
-	//rejectClients contém o cliente em si(int, double) e de onde ele foi retirado
-	//apenas registra qual cliente já foi alocado
-	//vector<int> allocatedClients(tam_genes, 0);
-	
-	// for (auto i:rejectsClients){
-	// 	cout << i.first << " " << i.second << " " << i.third << endl;
-	// }
-
-	//testando somente com a primeira rota
-	//cada posição de min corresponde a uma rota/veículo
-	//então min[0] == k_0
 	vector< pair<int, float> > min_(rejectsClients.size(), make_pair(0, MAXFLOAT));
-	
-	// for (int j = 0; j < (int)limits_route.size(); j++){
-	
-	// 	for (int i = 0; i < (int)rejectsClients.size(); i++){
-	// 		auto indi = rejectsClients[i].first-1;//indice do cliente no vetor de demanda
-			
-	// 		//contem o peso total da rota, supondo a adição do atual cliente rejeitado
-	// 		auto pesoTotal = demand_vec[indi] + limits_route[j].third;
-			
-	// 		//tem que ser o menor e não pode ter sido adicionado a um veículo
-	// 		if(pesoTotal - capacity < min_[j].second and allocatedClients[i] == 0){
-	// 			min_[j] = make_pair(i,pesoTotal - capacity);
-	// 		}
-
-	// 	}
-	// 						//imenor
-	// 	allocatedClients[min_[j].first] = 1;
-	// 	//o rejectedClient[min_[j].first] já foi alocado para a melhor rota
-
-	// }
 
 	for (int i = 0; i < (int)rejectsClients.size(); i++){
 		
@@ -115,8 +83,10 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 				min_[i] = make_pair(j, pesoTotal-capacity);
 			}
 		}
+		cout << "Antes adição: " << limits_route[min_[i].first].third << endl;
 						//j									//indi
 		limits_route[min_[i].first].third += demand_vec[rejectsClients[i].first-1];
+		cout << "Depois adição: " << limits_route[min_[i].first].third<< endl;
 	}
 	
 
@@ -130,90 +100,305 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 	}
 	
 	int i = 0;
-	double score_fit = this->real_score;
+	
+	int actual_car = 0;
+	auto aux_count = -1;
+	//vai guardar respectivamente, o indice em que deve ser inserido e o
+	//fit daquele cromossomo após aquela rota e o valor da chave aleatória
+	thrair<int, double, double> min_insert = {-1, MAXFLOAT, 0.0};
 	//melhorar essa parte para que deixe de ser o(n)
-	if(!rejectsClients.empty()){
-		for (i = 0; i < cromossomo.size(); i++){
-			if (min_[0].first+1 == (int) cromossomo[i].second){
+	
+	for (int j = 0; j < (int)rejectsClients.size(); j++){
+			
+		double score_fit = this->real_score;
+		aux_count = -1;	
+		actual_car = 0;
+		for (i = 0; i <(int) this->cromossomo.size(); i++){
+			//auto rejectClient_fit = score_fit;
+			
+			//conta o número da rota
+			//rota 0, rota 1, e assim sucessivamente
+			if( (int) cromossomo[i].second != actual_car){
+				actual_car = (int) cromossomo[i].second;
+				aux_count++;//troca de rota
+			}
 				
-				//No começo do cromossomo(que é um começo de rota)
-				//ou a parte inteira do double anterior
-				//seja diferente do atual
-				if(i == 0 || min_[0].first+1 != (int) cromossomo[i-1].second){
-					cout << "Começo teste" << endl;
-					int indi_1 = 0;
+				//rota           cont_rota
+			if (min_[j].first == aux_count){
+				auto rejectClient_fit = score_fit;
+				//começo de uma rota
+				//pode ser o inicio de um cromossomo
+				if(i == 0 || actual_car != (int) cromossomo[i-1].second){
+					//cout << "Começo\n";
+					//agr divide-se em dois casos
+					//posso inserir antes do começo da rota
+					//ou seja, depot-rejectClient-1cl-2cl...e assim sucessivamente
+					//ou depot-1cl-rejectClient-2cl...e assim sucessivamente
+
+					//supondo a inserção antes do primeiro cliente
+					int indi_1 = 0;//depósito
+					int indi_2 = this->cromossomo[i].first-1;//primeiro cliente
+					
+					//cout << "Desconsiderando " << indi_1 << "-" << indi_2+1 << endl;
+
+					//desfaz a rota do repósito ao primeiro cliente
+					rejectClient_fit -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//novo cliente que será inserido na rota
+					indi_2 = rejectsClients[j].first - 1;
+					//calculo da distância do depósito ao novo cliente que será inserido
+					rejectClient_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+					//cout << "Inserindo " << indi_1 << "-" << indi_2+1 << endl;
+
+					//cliente rejeitado
+					indi_1 = indi_2;
+					//primeiro cliente da rota
+					indi_2 = this->cromossomo[i].first-1;
+					//cout << "Inserindo " << indi_1+1 << "-" << indi_2+1 << endl;
+
+					//calcula distâcia do cliente rejeitado inserido na rota, até o primeiro cliente
+					rejectClient_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//guarda a posição que deverá ser inserido
+					auto insert_pos = i;
+					//guarda o fit após a inserção do novo cliente
+					auto fit_afterInsert = rejectClient_fit;
+					//nova chave aleatória temporária
+					auto new_aleatoryKey = fRand((int)this->cromossomo[i].second, this->cromossomo[i].second);
+					
+					// agora, precisamos verificar o caso de inserir após o primeiro cliente
+					// caso o próximo cliente pertença a mesma rota, o mesmo pode ser
+					// ou o ultimo cliente da rota, ou estar no meio de dois clientes da rota
+					// mas, pode ser que esse primeiro cliente TAMBÉM, seja o último da rota
+					// então é necessário fazer essa verificação
+					
+					//caso seja o primeiro E unico da rota
+					//vamos tentar inserir após ele
+					if(((int) cromossomo[i+1].second != actual_car) 
+						||i == (int)cromossomo.size()-1){
+						//cout << "Começo E fim\n";
+						auto fit_endRoute = score_fit;
+						//primeiro e ultimo cliente da rota
+						int indi_1 = this->cromossomo[i].first-1;
+						//depot
+						int indi_2 = 0;
+
+						//desconsidera distância do primeiro cliente ao depósito
+						fit_endRoute -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+						//cout << "Desconsiderando " << indi_1+1 << "-" << indi_2 << endl;
+
+						//insere o novo cliente entre o ultimo cliente e o depósito
+						//cliente que vai ser inserido
+						indi_2 = rejectsClients[j].first - 1;
+						//acrescenta distância do ultimo cliente da rota ao novo
+						fit_endRoute += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+						//cout << "Inserindo " << indi_1+1 << "-" << indi_2+1 << endl;
+
+						indi_1 = indi_2;
+						indi_2 = 0;
+						//acrescenta distância do cliente novo ao depósito
+						fit_endRoute += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+						//cout << "Inserindo " << indi_1+1 << "-" << indi_2 << endl;
+
+						//decide se vai inserir antes ou depois do primeiro cliente
+						if(fit_endRoute < rejectClient_fit){
+							//cout << "Inserir depois é melhor\n";
+							//guarda a posição que deverá ser inserido
+							auto insert_pos = i+1;
+							//guarda o fit após a inserção do novo cliente
+							auto fit_afterInsert = fit_endRoute;
+							//nova chave aleatória temporária
+							auto new_aleatoryKey = fRand(this->cromossomo[i].second, (int)this->cromossomo[i+1].second);
+						}
+						
+					}
+
+					if(fit_afterInsert < min_insert.second){
+						min_insert = {insert_pos, fit_afterInsert, new_aleatoryKey};
+					}
+					//cout << min_insert.first << " " << min_insert.second << endl;
+				}
+				//fim de rota
+				//pode ser o fim do cromossomo
+				//ou quando o próximo é um carro diferente do atual
+				else if( ((int) cromossomo[i+1].second != actual_car) 
+						||i == (int)cromossomo.size()-1){
+					//cout << "Fim teste" << endl;
+					//nesse caso podemos inserir antes do cliente atual
+					//ou depois, vamos tratar os dois casos
+
+					//inserindo antes
+					int indi_1 = this->cromossomo[i-1].first-1;
 					int indi_2 = this->cromossomo[i].first-1;
 
-					//subtrai o valor da rota
-					//de 0 ao primeiro cliente
-					score_fit -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);	
+					//desfaz a rota entre o individuo anterior e o atual
+					rejectClient_fit -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
 
-					//calcula a distância do 0 ao novo cliente que vai ser inserido
-											//i
-					indi_2 = rejectsClients[0].first - 1;
-					score_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+					//cliente rejeitado que será inserido na rota
+					indi_2 = rejectsClients[j].first -1;
 
-					//calcula a distância do novo cliente que seŕa inserido ao primeiro
+					//distancia entre o cliente anterior na rota e o novo cliente
+					rejectClient_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//novo cliente inserido na rota
 					indi_1 = indi_2;
+					//ultimo cliente da rota
 					indi_2 = this->cromossomo[i].first-1;
+
+					//distância entre os dois
+					rejectClient_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//guarda a posição que deverá ser inserido
+					auto insert_pos = i;
+					//guarda o fit após a inserção do novo cliente
+					auto fit_afterInsert = rejectClient_fit;
+					//nova chave aleatória temporária
+					auto new_aleatoryKey = fRand(this->cromossomo[i-1].second, this->cromossomo[i].second);
+
+					//falta considerar o caso de inserir após o último cara da rota
+					//inserindo após o último cliente da rota
+					auto aux_anotherRoute = score_fit;
 					
-
-				}
-				//fim do cromossomo é um fim de rota
-				//ou quando a parte inteira do double atual, é diferente do próximo
-				else if( (min_[0].first+1 != (int) cromossomo[i+1].second) 
-						||i == cromossomo.size()-1){
-					cout << "Fim teste" << endl;
-					int indi_1 = this->cromossomo[i].first-1;
-					int indi_2 = 0;
-
-					//subtrai do ultimo cliente da rota
-					//de 0 ao primeiro cliente
-					score_fit -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);	
-
-					//calcula a distância do 0 ao novo cliente que vai ser inserido
-											//i
-					indi_2 = rejectsClients[0].first - 1;
-					score_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
-
-					//calcula a distância do novo cliente que seŕa inserido ao primeiro
-					indi_1 = indi_2;
+					//ultimo cliente atendido pela rota
+					indi_1 = this->cromossomo[i].first-1;
+					//depot
 					indi_2 = 0;
-					score_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
-				}//demais casos                                                         
-				else{
-					cout << "Meio teste" << endl;
-					int indi_1 = this->cromossomo[i].first-1;
-					int indi_2 = this->cromossomo[i+1].first-1;
 
-					//subtrai do ultimo cliente da rota
-					//de 0 ao primeiro cliente
-					score_fit -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);	
+					//desconsidera distância entre o ultimo cliente e o depósito
+					aux_anotherRoute -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
 
-					//calcula a distância do 0 ao novo cliente que vai ser inserido
-											//i
-					indi_2 = rejectsClients[0].first - 1;
-					score_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+					//cliente que vai ser inserido entre o ultimo cliente e o depósito
+					indi_2 = rejectsClients[j].first -1;
 
-					//calcula a distância do novo cliente que seŕa inserido ao primeiro
+					//considera distância entre o ultimo cliente e o que vai ser inserido
+					aux_anotherRoute += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//individuo que foi inserido
 					indi_1 = indi_2;
+					//depot
+					indi_2 = 0;
+					
+					//considera a distância entre o cliente que foi inserido até o depot
+					aux_anotherRoute += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+					
+					//decide se vai inserir antes ou depois do ultimo cliente
+					if(aux_anotherRoute < rejectClient_fit){
+						//guarda a posição que deverá ser inserido
+						auto insert_pos = i+1;
+						//guarda o fit após a inserção do novo cliente
+						auto fit_afterInsert = aux_anotherRoute;
+						auto new_aleatoryKey = fRand(this->cromossomo[i].second, ((int)this->cromossomo[i].second) + 1);
+					}
+					if(fit_afterInsert < min_insert.second){
+						min_insert = {insert_pos, fit_afterInsert, new_aleatoryKey};
+					}
+					//cout << min_insert.first << " " << min_insert.second << endl;
+				}
+				//demais casos, no meio de uma rota
+				else{
+					//cout << "Meio Teste\n";
+					// nesse caso, estamos considerando a seguinte situação
+					// cl1-cl2-cl3, o i está em cl2,
+					// então precisamos decidir se inserimos antes ou depois do cl2
+
+					//vamos ver como fica a distância percorrida, tentando inserir antes do cl2
+					//nesse caso podemos inserir antes do cliente atual
+					//ou depois, vamos tratar os dois casos
+
+					//inserindo antes
+					int indi_1 = this->cromossomo[i-1].first-1;
+					int indi_2 = this->cromossomo[i].first-1;
+
+					//desfaz a rota entre o individuo anterior e o atual
+					rejectClient_fit -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//cliente rejeitado que será inserido na rota
+					indi_2 = rejectsClients[j].first -1;
+
+					//distancia entre o cliente anterior na rota e o novo cliente
+					rejectClient_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//novo cliente inserido na rota
+					indi_1 = indi_2;
+					//o outro cliente da rota
+					indi_2 = this->cromossomo[i].first-1;
+
+					//distância entre os dois
+					rejectClient_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+
+					//guarda a posição que deverá ser inserido
+					auto insert_pos = i;
+					//guarda o fit após a inserção do novo cliente
+					auto fit_afterInsert = rejectClient_fit;
+					auto new_aleatoryKey = fRand(this->cromossomo[i-1].second, this->cromossomo[i].second);
+
+					//falta considerar o caso de inserir após cl2
+					//inserindo após cl2
+					auto aux_anotherRoute = score_fit;
+					
+					//ultimo cliente atendido pela rota
+					indi_1 = this->cromossomo[i].first-1;
+					//depot
 					indi_2 = this->cromossomo[i+1].first-1;
-					score_fit += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//desconsidera distância entre o ultimo cliente e o depósito
+					aux_anotherRoute -= distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//cliente que vai ser inserido entre o ultimo cliente e o depósito
+					indi_2 = rejectsClients[j].first -1;
+
+					//considera distância entre o ultimo cliente e o que vai ser inserido
+					aux_anotherRoute += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+
+					//individuo que foi inserido
+					indi_1 = indi_2;
+					//depot
+					indi_2 = this->cromossomo[i+1].first-1;
+					
+					//considera a distância entre o cliente que foi inserido até o depot
+					aux_anotherRoute += distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
+					
+					//decide se vai inserir antes ou depois do ultimo cliente
+					if(aux_anotherRoute < rejectClient_fit){
+						//guarda a posição que deverá ser inserido
+						auto insert_pos = i+1;
+						//guarda o fit após a inserção do novo cliente
+						auto fit_afterInsert = aux_anotherRoute;
+						auto new_aleatoryKey = fRand(this->cromossomo[i].second, this->cromossomo[i+1].second);
+					}
+
+					if(fit_afterInsert < min_insert.second){
+						min_insert = {insert_pos, fit_afterInsert, new_aleatoryKey};
+					}
+					//cout << min_insert.first << " " << min_insert.second << endl;
 				}
 			}
 		}
+		cout << "Entrei aqui\n";
+		cout << min_insert.first << " " << min_insert.second << endl;
+		vector<pair<int, double>>::iterator it;
+									//posição em que deve ser inserido
+		it = this->cromossomo.begin() + min_insert.first;
+		this->cromossomo.insert(it, make_pair(rejectsClients[j].first, min_insert.third) );
+
+		min_insert = {-1, MAXFLOAT, 0.0};
 	}
-
-
+		
+		
 	
 	
+	//cout << min_insert.first << " " << min_insert.second << " " << min_insert.third << endl;
+
 	
 }
 
 void Individuo::atScore(int repair){
 	vector<thrair<int, double, int>> rejectClients;
+	vector<thrair<int, int, int>> routes;
 	infeasibility = 0;
 	int peso_penality   = 0;
+	int cout_routes = 0;//usado para inserir no vetor limits_route
 
 	// Como a ordem de visitas de um veículo é dado pelo seu double
 	// ordeno o vetor para saber qual a ordem de visitas aos clientes
@@ -226,7 +411,7 @@ void Individuo::atScore(int repair){
 	int i = 0;
 	int indi_1 = 0;
 	int indi_2 = this->cromossomo[i].first-1;
-	int actual_car = 1;//considerando que existe mais de um this.cromossomoeículo
+	int actual_car = (int) this->cromossomo[i].second;//considerando que existe mais de um this.cromossomoeículo
 	int peso = 0;
 	
 	
@@ -256,6 +441,7 @@ void Individuo::atScore(int repair){
 		//ou seja, outra rota
 		//então deve-se retornar ao depósito
 		if(actual_car < (int) this->cromossomo[i].second){
+			cout_routes++;
 			//cout << "troca carro" << endl;
 			actual_car = (int) this->cromossomo[i].second;
 			
@@ -263,7 +449,8 @@ void Individuo::atScore(int repair){
 			
 			final_route = i - 1;
 			//cout << "ini: " << init_route << " fi: " << final_route << endl;
-			limits_route.push_back({init_route, final_route, peso});
+			//limits_route.push_back({init_route, final_route, peso});
+			routes.push_back({init_route, final_route, peso});
 			init_route = i;
 			
 			//após retornar o depósito, checamos se aquela rota
@@ -290,12 +477,13 @@ void Individuo::atScore(int repair){
 		}
 		//cout << "i: "<<  i << endl;
 		if(i >= (int)this->cromossomo.size()){//fim da linha
-			//cout << "cabo porra" << endl;
+			
 			// quer dizer que terminaram as entregas
 			// então o caminhão atual deve retornar ao depósito
 			final_route = i-1;
 			//cout << "ini: " << init_route << " fi: " << final_route << endl;
-			limits_route.push_back({init_route, final_route, peso});
+			// limits_route.push_back({init_route, final_route, peso});
+			routes.push_back({init_route, final_route, peso});
 
 			score_fit += distEuclidiana(distance_vec[indi_1], distance_vec[0]);
 			if(peso > capacity){//significa que a capacidade do caminhão foi ultrapassada
@@ -309,7 +497,7 @@ void Individuo::atScore(int repair){
 
 	this->real_score = score_fit;//distância euclidiana efetivamente percorrida
 	this->score = score_fit + (pow(peso_penality, 2.)) * infeasibility;
-	
+	limits_route = routes;
 	if (repair){
 		
 		for (auto k:limits_route){
@@ -343,6 +531,7 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
 	
+	this->printGenes();
 	double prob = fRand(0, 1);
 	
 	//if(prob_repair > prob){//então tem que reparar o cromossomo
@@ -352,6 +541,19 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 	// else{
 	// 	this->atScore(0); // atualiza o score do individuo
 	// }
+}
+
+//apenas para debug
+Individuo::Individuo(double v[]): score(0), real_score(0), infeasibility(0){
+	int j = 2;
+	for (int i = 0; i < tam_genes; ++i){
+		//double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
+		this->cromossomo.push_back(make_pair(j++, v[i]));//insere o gene no cromossomo
+	}
+	
+	//this->atScore(1); 
+
+
 }
 
 Individuo::~Individuo(){
