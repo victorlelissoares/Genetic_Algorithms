@@ -18,15 +18,11 @@ int main(int argc, char const *argv[]){
 	//Population pop;
 	
 	//teste de reparação de cromossomo
-	double v[]={2.69419,2.88349,2.80162,2.94151,2.84382};
+	//double v[]={1.51661,1.42038,2.14007,1.15419,1.41112};
 	
 	Individuo teste;
-	teste.atScore(1);
 	teste.printGenes();
-	cout <<"pós at1" << endl;
-	teste.atScore(0);
-	cout <<"pós at0" << endl;
-	teste.printGenes();
+	
 	
 
 	//teste.cromossomo.clear();
@@ -224,7 +220,7 @@ void read_file(string file){
 		}
 		// cout << "depois";
 		char *tok = strtok(line, " \n");
-		int pos = stoi(tok);
+		//int pos = stoi(tok);
 		//cout << "client: " << pos << " ";
 		tok = strtok(NULL, " \n");
 		//cout << " demand: " << stoi(tok) << endl;

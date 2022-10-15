@@ -23,20 +23,20 @@ int tam_pop      = 100; // quantidade de indivíduos da população
 
 int tam_torneio  = 10; // tamanho do torneio
 
-int geracoes  =  100; // quantidade de gerações
+int geracoes     = 100; // quantidade de gerações
 
-double prob_mut = 0.8; // probabilidade de mutação
+double prob_mut  = 0.8; // probabilidade de mutação
 
-double prob_cruz= 0.6; // probabilidade de cruzamento
+double prob_cruz = 0.6; // probabilidade de cruzamento
 
-double prob_repair = 0.1;//como a reparação de cromosso é um processo muito custoso, a probabilidade de acontecer
+double prob_repair = 1;//como a reparação de cromosso é um processo muito custoso, a probabilidade de acontecer
 //será baixa para garantir o bom desempenho do programa
 
-int selec_gene   = 60;
+int selec_gene    = 60;
 
-int capacity      = 0;
+int capacity       = 0;
 
-int depot         = 0;
+int depot          = 0;
 
 //Contém as coordenadas x e y de cada cliente
 vector< pair <int, int> > distance_vec;
@@ -70,7 +70,7 @@ class Individuo{
 												   //contém o cliente 
 void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsClients){
 	vector< pair<int, float> > min_(rejectsClients.size(), make_pair(0, MAXFLOAT));
-
+	//this->printGenes();
 	for (int i = 0; i < (int)rejectsClients.size(); i++){
 		
 		for (int j = 0; j < (int)limits_route.size(); j++){
@@ -83,13 +83,13 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 				min_[i] = make_pair(j, pesoTotal-capacity);
 			}
 		}
-		cout << "Antes adição: " << limits_route[min_[i].first].third << endl;
+		//cout << "Antes adição: " << limits_route[min_[i].first].third << endl;
 						//j									//indi
 		limits_route[min_[i].first].third += demand_vec[rejectsClients[i].first-1];
-		cout << "Depois adição: " << limits_route[min_[i].first].third<< endl;
+		//cout << "Depois adição: " << limits_route[min_[i].first].third<< endl;
 	}
 	
-
+	/*
 	cout << "Rota em que deve ser inserido e diferença de peso" << endl;
 	for (auto i:min_){
 		cout << i.first << " " << i.second << endl;
@@ -98,6 +98,7 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 	for (auto i:limits_route){
 		cout << i.first << " " << i.second << " " << i.third << endl;
 	}
+	*/
 	
 	int i = 0;
 	
@@ -113,16 +114,21 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 		double score_fit = this->real_score;
 		aux_count = -1;	
 		actual_car = 0;
+		//cout << "reject " << j << endl;
+		i = 0;
 		for (i = 0; i <(int) this->cromossomo.size(); i++){
 			//auto rejectClient_fit = score_fit;
 			
 			//conta o número da rota
 			//rota 0, rota 1, e assim sucessivamente
+			//cout << cromossomo[i].second <<endl;
+			//cout <<"cr: " << (int) cromossomo[i].second << " actual: " << (int) cromossomo[i].second << endl;
 			if( (int) cromossomo[i].second != actual_car){
 				actual_car = (int) cromossomo[i].second;
 				aux_count++;//troca de rota
 			}
-				
+			
+				// cout << "rota: " << min_[j].first << " count: " << aux_count << endl;
 				//rota           cont_rota
 			if (min_[j].first == aux_count){
 				auto rejectClient_fit = score_fit;
@@ -204,11 +210,11 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 						if(fit_endRoute < rejectClient_fit){
 							//cout << "Inserir depois é melhor\n";
 							//guarda a posição que deverá ser inserido
-							auto insert_pos = i+1;
+							insert_pos = i+1;
 							//guarda o fit após a inserção do novo cliente
-							auto fit_afterInsert = fit_endRoute;
+							fit_afterInsert = fit_endRoute;
 							//nova chave aleatória temporária
-							auto new_aleatoryKey = fRand(this->cromossomo[i].second, (int)this->cromossomo[i+1].second);
+							new_aleatoryKey = fRand(this->cromossomo[i].second, (int)this->cromossomo[i+1].second);
 						}
 						
 					}
@@ -284,10 +290,10 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 					//decide se vai inserir antes ou depois do ultimo cliente
 					if(aux_anotherRoute < rejectClient_fit){
 						//guarda a posição que deverá ser inserido
-						auto insert_pos = i+1;
+						insert_pos = i+1;
 						//guarda o fit após a inserção do novo cliente
-						auto fit_afterInsert = aux_anotherRoute;
-						auto new_aleatoryKey = fRand(this->cromossomo[i].second, ((int)this->cromossomo[i].second) + 1);
+						fit_afterInsert = aux_anotherRoute;
+						new_aleatoryKey = fRand(this->cromossomo[i].second, ((int)this->cromossomo[i].second) + 1);
 					}
 					if(fit_afterInsert < min_insert.second){
 						min_insert = {insert_pos, fit_afterInsert, new_aleatoryKey};
@@ -362,10 +368,10 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 					//decide se vai inserir antes ou depois do ultimo cliente
 					if(aux_anotherRoute < rejectClient_fit){
 						//guarda a posição que deverá ser inserido
-						auto insert_pos = i+1;
+						insert_pos = i+1;
 						//guarda o fit após a inserção do novo cliente
-						auto fit_afterInsert = aux_anotherRoute;
-						auto new_aleatoryKey = fRand(this->cromossomo[i].second, this->cromossomo[i+1].second);
+						fit_afterInsert = aux_anotherRoute;
+						new_aleatoryKey = fRand(this->cromossomo[i].second, this->cromossomo[i+1].second);
 					}
 
 					if(fit_afterInsert < min_insert.second){
@@ -375,8 +381,8 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 				}
 			}
 		}
-		cout << "Entrei aqui\n";
-		cout << min_insert.first << " " << min_insert.second << endl;
+		// cout << "Entrei aqui\n";
+		// cout << min_insert.first << " " << min_insert.second << endl;
 		vector<pair<int, double>>::iterator it;
 									//posição em que deve ser inserido
 		it = this->cromossomo.begin() + min_insert.first;
@@ -384,64 +390,61 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 
 		min_insert = {-1, MAXFLOAT, 0.0};
 	}
-		
-		
-	
-	
-	//cout << min_insert.first << " " << min_insert.second << " " << min_insert.third << endl;
 
-	
+	this->atScore(0);
+		
 }
 
 void Individuo::atScore(int repair){
-	vector<thrair<int, double, int>> rejectClients;
-	vector<thrair<int, int, int>> routes;
-	infeasibility = 0;
-	int peso_penality   = 0;
-	int cout_routes = 0;//usado para inserir no vetor limits_route
-
 	// Como a ordem de visitas de um veículo é dado pelo seu double
 	// ordeno o vetor para saber qual a ordem de visitas aos clientes
 	sort(this->cromossomo.begin(), this->cromossomo.end(),
      [](const pair<int, double>& lhs, const pair<int, double>& rhs) {
              return lhs.second < rhs.second; } );
-	
-	
+
+	this->infeasibility = 0;
+	int peso_penality   = 0;
 	double score_fit = 0;
 	int i = 0;
 	int indi_1 = 0;
-	int indi_2 = this->cromossomo[i].first-1;
-	int actual_car = (int) this->cromossomo[i].second;//considerando que existe mais de um this.cromossomoeículo
+	int indi_2 = this->cromossomo[0].first-1;
+	int actual_car = (int) this->cromossomo[0].second;//considerando que existe mais de um veículo
 	int peso = 0;
-	
-	
-	//cout << "this.cromossomoeículo " << (int) this.cromossomo[i].second << " saindo do depósito" << endl;
 	int init_route = i, final_route;
+
+	vector<thrair<int, double, int>> rejectClients;
+	vector<thrair<int, int, int>> routes;
 	
-	while ( i < tam_genes){
-		//cout << "i: "<<  i << endl;
+	
+	while ( i < (int)cromossomo.size()){
 		
 		if( (peso + demand_vec[indi_2] > capacity) and repair == 1){
 			//cliente e indice de onde foi removido do vetor
+			cout << "Rejeitado: " << this->cromossomo[i].first << " " << this->cromossomo[i].second 
+			<< endl;
+			//removendo indi2
 			rejectClients.push_back({this->cromossomo[i].first, this->cromossomo[i].second, i});
+			vector<pair< int, double>>::iterator it = cromossomo.begin() + i;//calcula posição do iterador
+			this->cromossomo.erase(it);
 			
 		}
 		else{
 			score_fit +=  distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);	
 			peso += demand_vec[indi_2];
+			indi_1 = indi_2;
+			//peso += demand_vec[indi_2];
+			i++;
+			
+
 		}
 		//score_fit +=  distEuclidiana(distance_vec[indi_1], distance_vec[indi_2]);
-		
-		indi_1 = indi_2;
-		//peso += demand_vec[indi_2];
-		i++;
 		indi_2 = this->cromossomo[i].first-1;
-		//cout << "indi2: " << indi_2;
+		
 		//significa que trocou de carro
 		//ou seja, outra rota
 		//então deve-se retornar ao depósito
-		if(actual_car < (int) this->cromossomo[i].second){
-			cout_routes++;
+		if(actual_car < ((int) this->cromossomo[i].second)){
+			//cout_routes++;
 			//cout << "troca carro" << endl;
 			actual_car = (int) this->cromossomo[i].second;
 			
@@ -500,29 +503,23 @@ void Individuo::atScore(int repair){
 	limits_route = routes;
 	if (repair){
 		
-		for (auto k:limits_route){
-			cout << k.first << " " << k.second << " " << k.third << endl;
-		}
+		// for (auto k:limits_route){
+		// 	cout << k.first << " " << k.second << " " << k.third << endl;
+		// }
 
-		cout << "Removidos : ";
-		for (auto i:rejectClients){
-			vector<pair< int, double>>::iterator it = cromossomo.begin() + i.third;//calcula posição do iterador
-			this->cromossomo.erase(it);
-			cout << i.first << " " << i.second << " " << i.third << endl;
-		}
-		cout << endl;
+		// //cout << "Removidos : ";
+		// for (auto i:rejectClients){
+		// 	// vector<pair< int, double>>::iterator it = cromossomo.begin() + i.third;//calcula posição do iterador
+		// 	// this->cromossomo.erase(it);
+		// 	cout << i.first << " " << i.second << " " << i.third << endl;
+		// }
+		// cout << endl;
+		// cout << "Antes reparar" << endl;
+		// this->printGenes();
 		this->reparationCromossome(rejectClients);
 	}
 	
-	
-	
 }
-/*Penalizar inviabilidade
-O método de cálculo da adequação da solução foi o primeiro procedimento testado para observar 
-o efeito que isso teria nos resultados. 
-O primeiro método de penalização tentado foi penalizar cada solução inviável, 
-atribuindo seu custo a um grande valor.
-*/
 
 Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 	int j = 2;
@@ -531,16 +528,16 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
 	
-	this->printGenes();
+	//this->printGenes();
 	double prob = fRand(0, 1);
 	
-	//if(prob_repair > prob){//então tem que reparar o cromossomo
+	if(prob_repair > prob){//então tem que reparar o cromossomo
 		this->atScore(1); // atualiza o score do individuo
 
-	// }
-	// else{
-	// 	this->atScore(0); // atualiza o score do individuo
-	// }
+	}
+	else{
+		this->atScore(0); // atualiza o score do individuo
+	}
 }
 
 //apenas para debug
@@ -550,9 +547,6 @@ Individuo::Individuo(double v[]): score(0), real_score(0), infeasibility(0){
 		//double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
 		this->cromossomo.push_back(make_pair(j++, v[i]));//insere o gene no cromossomo
 	}
-	
-	//this->atScore(1); 
-
 
 }
 

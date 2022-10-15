@@ -1,6 +1,5 @@
 #include <cmath>
 #include <iostream>
-
 using namespace std;
 
 template <typename a, typename b, typename c> struct thrair{
@@ -8,7 +7,6 @@ template <typename a, typename b, typename c> struct thrair{
 	b second;
 	c third;
 };
-
 
 //função para gerar números(double) aleatórios 
 inline double fRand(double fMin, double fMax){
