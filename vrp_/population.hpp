@@ -4,7 +4,7 @@
 class Population{
 	public:
 		Population(); //construtor padrão
-		~Population(); //destrutor padrão
+		~Population();//destrutor padrão
 		void printPopulation();
 		//int indexBestScore();
 		Individuo best;

@@ -14,25 +14,27 @@
 
 using namespace std;
 
+ //gap = 100 * (valorE - ValorO)/ValorE
+
 // Hiper parâmetros do algoritmo genético
 int qtd_carros    = 0;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 100; // quantidade de indivíduos da população
+int tam_pop      = 10000; // quantidade de indivíduos da população
 
-int tam_torneio  = 10; // tamanho do torneio
+int tam_torneio  = 1000; // tamanho do torneio
 
-int geracoes     = 100; // quantidade de gerações
+int geracoes     = 10000; // quantidade de gerações
 
-double prob_mut  = 0.8; // probabilidade de mutação
+double prob_mut  = 0.4; // probabilidade de mutação
 
-double prob_cruz = 0.6; // probabilidade de cruzamento
+double prob_cruz = 0.85; // probabilidade de cruzamento
 
-double prob_repair = 1;//como a reparação de cromosso é um processo muito custoso, a probabilidade de acontecer
+double prob_repair = 0.4;//como a reparação de cromosso é um processo muito custoso, a probabilidade de acontecer
 //será baixa para garantir o bom desempenho do programa
 
-int selec_gene    = 60;
+int selec_gene    = 50; //parametro para seleção uniforme
 
 int capacity       = 0;
 
@@ -56,10 +58,11 @@ class Individuo{
 		void mutation(void (*type_mutation)(Individuo *indi));//mutação
 		void crossing(Individuo *pai1, Individuo *pai2, 
 		void (*type_crossing)(Individuo*, Individuo*, Individuo*));//operador de cruzamento, recebe a função de cruzamento como parâmetro
+		Individuo& operator=(const Individuo& indi);
 
 		//first correponde ao número do cliente e second a chave aleatória
 		vector< pair<int, double> > cromossomo;//vetor de genes
-		vector<thrair<int, int, int>> limits_route;//diz onde começa e termina uma rota de um K 
+		vector< thrair<int, int, int> > limits_route;//diz onde começa e termina uma rota de um K 
 		//e o peso que atualmente aquela rota possui
 		double score;//score do individuo, vai ser calculado através da distância euclidiana+penalidade
 		double real_score;
@@ -67,10 +70,22 @@ class Individuo{
 		
 };
 
+
+Individuo& Individuo::operator=(const Individuo& indi){
+	for (int k = 0; k < tam_genes; k++){
+		this->cromossomo[k] = indi.cromossomo[k];
+		this->score = indi.score;
+		this->real_score = indi.real_score;
+		this->infeasibility = indi.infeasibility;
+	}
+	return *this;
+}
 												   //contém o cliente 
 void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsClients){
 	vector< pair<int, float> > min_(rejectsClients.size(), make_pair(0, MAXFLOAT));
 	//this->printGenes();
+	// Complexidade: O(nXm), onde n é o numero de clientes excluidos
+	// e m o número de rotas
 	for (int i = 0; i < (int)rejectsClients.size(); i++){
 		
 		for (int j = 0; j < (int)limits_route.size(); j++){
@@ -420,8 +435,8 @@ void Individuo::atScore(int repair){
 		
 		if( (peso + demand_vec[indi_2] > capacity) and repair == 1){
 			//cliente e indice de onde foi removido do vetor
-			cout << "Rejeitado: " << this->cromossomo[i].first << " " << this->cromossomo[i].second 
-			<< endl;
+			// cout << "Rejeitado: " << this->cromossomo[i].first << " " << this->cromossomo[i].second 
+			// << endl;
 			//removendo indi2
 			rejectClients.push_back({this->cromossomo[i].first, this->cromossomo[i].second, i});
 			vector<pair< int, double>>::iterator it = cromossomo.begin() + i;//calcula posição do iterador
@@ -502,7 +517,6 @@ void Individuo::atScore(int repair){
 	this->score = score_fit + (pow(peso_penality, 2.)) * infeasibility;
 	limits_route = routes;
 	if (repair){
-		
 		// for (auto k:limits_route){
 		// 	cout << k.first << " " << k.second << " " << k.third << endl;
 		// }
@@ -531,8 +545,9 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 	//this->printGenes();
 	double prob = fRand(0, 1);
 	
-	if(prob_repair > prob){//então tem que reparar o cromossomo
-		this->atScore(1); // atualiza o score do individuo
+	if(prob_repair > prob and this->infeasibility){//então tem que reparar o cromossomo
+		//cout << "Reparando..." << endl;
+		this->atScore(1); // atualiza o score do individuo, passando a flag que tem que reparar
 
 	}
 	else{
