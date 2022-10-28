@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#ainda não terminado
 g++ *.cpp -o vrp_simple -O3 
 
 

@@ -22,9 +22,9 @@ Population::Population(){
 		this->population.push_back(indi);
 
 		if(indi.score <= best.score and indi.infeasibility == 0){
-			best.score = indi.score;
-			best.real_score = indi.real_score;
-			best.cromossomo = indi.cromossomo;
+			best = indi;
+			cout << best.real_score << endl;
+			//best.printGenes();
 		}
 	}
 	

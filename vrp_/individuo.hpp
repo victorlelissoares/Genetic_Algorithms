@@ -14,22 +14,22 @@
 
 using namespace std;
 
- //gap = 100 * (valorE - ValorO)/ValorE
+//gap = 100 * (valorE - ValorO)/ValorE
 
 // Hiper parâmetros do algoritmo genético
 int qtd_carros    = 0;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 10000; // quantidade de indivíduos da população
+int tam_pop      = 2; // quantidade de indivíduos da população
 
-int tam_torneio  = 1000; // tamanho do torneio
+int tam_torneio  = 100; // tamanho do torneio
 
-int geracoes     = 10000; // quantidade de gerações
+int geracoes     = 5000; // quantidade de gerações
 
-double prob_mut  = 0.4; // probabilidade de mutação
+double prob_mut  = 0.1; // probabilidade de mutação
 
-double prob_cruz = 0.85; // probabilidade de cruzamento
+double prob_cruz = 0.8; // probabilidade de cruzamento
 
 double prob_repair = 0.4;//como a reparação de cromosso é um processo muito custoso, a probabilidade de acontecer
 //será baixa para garantir o bom desempenho do programa
@@ -62,7 +62,7 @@ class Individuo{
 
 		//first correponde ao número do cliente e second a chave aleatória
 		vector< pair<int, double> > cromossomo;//vetor de genes
-		vector< thrair<int, int, int> > limits_route;//diz onde começa e termina uma rota de um K 
+		vector< thrair<int, int, int> > limits_route;//diz onde começa e termina uma rota de um veículo
 		//e o peso que atualmente aquela rota possui
 		double score;//score do individuo, vai ser calculado através da distância euclidiana+penalidade
 		double real_score;
@@ -70,14 +70,15 @@ class Individuo{
 		
 };
 
-
 Individuo& Individuo::operator=(const Individuo& indi){
 	for (int k = 0; k < tam_genes; k++){
 		this->cromossomo[k] = indi.cromossomo[k];
-		this->score = indi.score;
-		this->real_score = indi.real_score;
-		this->infeasibility = indi.infeasibility;
 	}
+	
+	this->score = indi.score;
+	this->real_score = indi.real_score;
+	this->infeasibility = indi.infeasibility;
+	
 	return *this;
 }
 												   //contém o cliente 
@@ -98,10 +99,8 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 				min_[i] = make_pair(j, pesoTotal-capacity);
 			}
 		}
-		//cout << "Antes adição: " << limits_route[min_[i].first].third << endl;
 						//j									//indi
 		limits_route[min_[i].first].third += demand_vec[rejectsClients[i].first-1];
-		//cout << "Depois adição: " << limits_route[min_[i].first].third<< endl;
 	}
 	
 	/*
@@ -125,7 +124,6 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 	//melhorar essa parte para que deixe de ser o(n)
 	
 	for (int j = 0; j < (int)rejectsClients.size(); j++){
-			
 		double score_fit = this->real_score;
 		aux_count = -1;	
 		actual_car = 0;
@@ -405,7 +403,6 @@ void Individuo::reparationCromossome(vector<thrair<int, double, int>> rejectsCli
 
 		min_insert = {-1, MAXFLOAT, 0.0};
 	}
-
 	this->atScore(0);
 		
 }
@@ -517,6 +514,7 @@ void Individuo::atScore(int repair){
 	this->score = score_fit + (pow(peso_penality, 2.)) * infeasibility;
 	limits_route = routes;
 	if (repair){
+		//cout << "Reparando..." << endl;
 		// for (auto k:limits_route){
 		// 	cout << k.first << " " << k.second << " " << k.third << endl;
 		// }
@@ -542,6 +540,9 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
 	
+	this->printGenes();
+
+	this->atScore(0); // atualiza o score do individuo
 	//this->printGenes();
 	double prob = fRand(0, 1);
 	
@@ -549,9 +550,6 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 		//cout << "Reparando..." << endl;
 		this->atScore(1); // atualiza o score do individuo, passando a flag que tem que reparar
 
-	}
-	else{
-		this->atScore(0); // atualiza o score do individuo
 	}
 }
 
@@ -613,5 +611,5 @@ void Individuo::printGenes(){
 	cout << "; Distance: " << this->real_score;
 	cout << "; Fit: " << this->score;
 	cout << " ; Inviavel? " << this->infeasibility;
-	cout << endl;
+	cout << endl << endl;
 }

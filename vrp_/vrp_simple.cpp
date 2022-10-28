@@ -94,6 +94,13 @@ int main(int argc, char const *argv[]){
 				}
 				
 				Individuo filho;
+				//ignorar esses sorts
+				sort(pop.population[indice_pai1].cromossomo.begin(), pop.population[indice_pai1].cromossomo.end(),[](const pair<int, double>& lhs, const pair<int, double>& rhs) {
+					return lhs.first < rhs.first; } );
+				sort(pop.population[indice_pai2].cromossomo.begin(), pop.population[indice_pai2].cromossomo.end(),[](const pair<int, double>& lhs, const pair<int, double>& rhs) {
+					return lhs.first < rhs.first; } );
+				sort(filho.cromossomo.begin(), filho.cromossomo.end(),[](const pair<int, double>& lhs, const pair<int, double>& rhs) {
+					return lhs.first < rhs.first; } );	
 				filho.crossing(&pop.population[indice_pai1], &pop.population[indice_pai2], &uniformCrossing);
 				//filho.atScore(0);//atualiza o score do filho
 
@@ -133,8 +140,10 @@ int main(int argc, char const *argv[]){
 					
 					// pop.population[max_pai].atScore(0);
 
-					if(pop.best.score > pop.population[max_pai].score and !pop.population[max_pai].infeasibility){
+					if(pop.best.score > pop.population[max_pai].score and pop.population[max_pai].infeasibility == 0){
 						pop.best = pop.population[max_pai];
+						cout << pop.best.real_score << endl;
+						pop.best.printGenes();
 					}
 				}
 			}
@@ -142,11 +151,7 @@ int main(int argc, char const *argv[]){
 
 		}
 	
-	
-		// cout << endl;
-		// pop.printPopulation();
-		// cout << endl;
-		cout << pop.best.real_score << endl;
+		
 	}
 
 	return 0;
@@ -249,8 +254,8 @@ void read_file(string file){
 	getline(myfile, myline, '\n');//lê fim dos depósitos
 	getline(myfile, myline, '\n');//lê o fim de um arquivo
 
-	//cout << "K = " << qtd_carros << endl;
-	//cout << "C = " << capacity << endl;
-	//cout << "depot = " << depot << endl;
-	//cout << "Genes = " << tam_genes << endl;
+	cout << "K = " << qtd_carros << endl;
+	cout << "C = " << capacity << endl;
+	cout << "depot = " << depot << endl;
+	cout << "Genes = " << tam_genes << endl;
 }
