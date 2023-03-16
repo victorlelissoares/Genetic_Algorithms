@@ -47,7 +47,8 @@ int main(int argc, char const *argv[]){
 	// teste.printGenes();
 	// teste.atScore();
 
-	// //teste de reprodução
+	//teste de reprodução
+	// cout << "passei" << endl;
 	// Individuo filho;
 	// filho.crossing(&pop.population[0], &pop.population[1], &uniformCrossing);
 	// filho.printGenes();
@@ -92,7 +93,7 @@ int main(int argc, char const *argv[]){
 				while(indice_pai2 == indice_pai1 && (indice_pai2 >= 0 && indice_pai2 <= tam_elitismo-1)){
 					indice_pai2 = rand() % tam_pop;
 				}
-				
+				cout << "criando filho" << endl;
 				Individuo filho;
 				//ignorar esses sorts
 				sort(pop.population[indice_pai1].cromossomo.begin(), pop.population[indice_pai1].cromossomo.end(),[](const pair<int, double>& lhs, const pair<int, double>& rhs) {
@@ -102,7 +103,7 @@ int main(int argc, char const *argv[]){
 				sort(filho.cromossomo.begin(), filho.cromossomo.end(),[](const pair<int, double>& lhs, const pair<int, double>& rhs) {
 					return lhs.first < rhs.first; } );	
 				filho.crossing(&pop.population[indice_pai1], &pop.population[indice_pai2], &uniformCrossing);
-				//filho.atScore(0);//atualiza o score do filho
+				filho.atScore(0);//atualiza o score do filho
 
 				double prob = fRand(0, 1);
 
@@ -115,10 +116,12 @@ int main(int argc, char const *argv[]){
 	
 				if(prob_repair > prob and filho.infeasibility){//então tem que reparar o cromossomo
 					//cout << "Reparando..." << endl;
+					cout << "passei at 1" << endl;
 					filho.atScore(1);//atualiza o score // atualiza o score do individuo, passando a flag que tem que reparar
 
 				}
 				else{
+					cout << "passei at 0" << endl;
 					filho.atScore(0);//atualiza o score // atualiza o score do individuo
 				}
 				
@@ -138,12 +141,12 @@ int main(int argc, char const *argv[]){
 					// 	pop.population[max_pai].cromossomo[k] = filho.cromossomo[k];
 					// }
 					
-					// pop.population[max_pai].atScore(0);
+					pop.population[max_pai].atScore(0);
 
 					if(pop.best.score > pop.population[max_pai].score and pop.population[max_pai].infeasibility == 0){
 						pop.best = pop.population[max_pai];
-						cout << pop.best.real_score << endl;
-						pop.best.printGenes();
+						// cout << pop.best.real_score << endl;
+						// pop.best.printGenes();
 					}
 				}
 			}
