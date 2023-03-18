@@ -21,11 +21,11 @@ int qtd_carros    = 0;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 1; // quantidade de indivíduos da população
+int tam_pop      = 200; // quantidade de indivíduos da população
 
-int tam_torneio  = 1; // tamanho do torneio
+int tam_torneio  = 100; // tamanho do torneio
 
-int geracoes     = 1; // quantidade de gerações
+int geracoes     = 100; // quantidade de gerações
 
 double prob_mut  = 0.8; // probabilidade de mutação
 
@@ -511,9 +511,9 @@ void Individuo::atScore(int repair){
 	}	
 
 	this->real_score = score_fit;//distância euclidiana efetivamente percorrida
-	cout << "distância percorrida-> " << this->real_score << " " << score_fit <<endl;
+	//cout << "distância percorrida sem penalização-> " << this->real_score << " " << score_fit <<endl;
 	this->score = score_fit + (pow(peso_penality, 2.)) * infeasibility;
-	cout << "distância percorrida-> " << this->score << " " << score_fit + (pow(peso_penality, 2.)) * infeasibility <<endl;
+	//cout << "distância percorrida com penalização-> " << this->score << " " << score_fit + (pow(peso_penality, 2.)) * infeasibility <<endl;
 	limits_route = routes;
 	if (repair){
 		//cout << "Reparando..." << endl;
@@ -536,13 +536,14 @@ void Individuo::atScore(int repair){
 }
 
 Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
+	//cout << "Construtor do individuo" << endl;
 	int j = 2;
 	for (int i = 0; i < tam_genes; ++i){
 		double gene =  fRand(1, qtd_carros+1);//gera o alelo(valor do gene)
 		this->cromossomo.push_back(make_pair(j++, gene));//insere o gene no cromossomo
 	}
-	cout << "Genes da criação de individuo" << endl;
-	this->printGenes();
+	//cout << "Genes da criação de individuo" << endl;
+	//this->printGenes();
 
 	this->atScore(0); // atualiza o score do individuo
 	//this->printGenes();
@@ -553,6 +554,7 @@ Individuo::Individuo(): score(0), real_score(0), infeasibility(0){
 		this->atScore(1); // atualiza o score do individuo, passando a flag que tem que reparar
 
 	}
+	//cout << "Saindo do Construtor do individuo" << endl;
 }
 
 //apenas para debug
