@@ -19,11 +19,12 @@ Population::Population(){
 
 	for (int i = 0; i < tam_pop; i++){
 		Individuo indi;
+		indi.atScore(0);
 		this->population.push_back(indi);
 
 		if(indi.score <= best.score and indi.infeasibility == 0){
 			best = indi;
-			cout << best.real_score << endl;
+			//cout << best.real_score << endl;
 			//best.printGenes();
 		}
 	}
