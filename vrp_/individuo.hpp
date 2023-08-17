@@ -40,6 +40,8 @@ int capacity       = 0;
 
 int depot          = 0;
 
+int repair         = 0;
+
 //Contém as coordenadas x e y de cada cliente
 vector< pair <int, int> > distance_vec;
 
