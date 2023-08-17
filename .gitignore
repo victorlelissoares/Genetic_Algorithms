@@ -1,9 +1,7 @@
-.vscode/
+./.vscode
 
-.vscode
+vrp/vrp
 
-vrp
-./vrp
+vrp/results
 
-./results
-results
+vrp/benchmarks
