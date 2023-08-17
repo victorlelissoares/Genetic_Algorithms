@@ -18,7 +18,7 @@ int main(int argc, char const *argv[]){
 	Population pop;
 	
 	for(int numGeracoes = 0; numGeracoes < geracoes; numGeracoes++){
-		cout << "Geração " << numGeracoes + 1 << "..." << endl;
+		//	cout << "Geração " << numGeracoes + 1 << "..." << endl;
 			sort(pop.population.begin(), pop.population.end(),[](const Individuo& lhs, const Individuo& rhs) {
 					return lhs.score < rhs.score; } );
 		// 	//pop.printPopulation();
@@ -66,9 +66,8 @@ int main(int argc, char const *argv[]){
 
 				prob = fRand(0, 1);
 	
-				if(prob_repair > prob and filho.infeasibility){//então tem que reparar o cromossomo
+				if(prob_repair > prob and filho.infeasibility and repair){//então tem que reparar o cromossomo
 					filho.atScore(1);//atualiza o score // atualiza o score do individuo, passando a flag que tem que reparar
-
 				}
 				else{
 					filho.atScore(0);//atualiza o score // atualiza o score do individuo
@@ -103,7 +102,8 @@ int main(int argc, char const *argv[]){
 		
 	}
 	
-	pop.printPopulation();
+	//pop.printPopulation();
+	cout << pop.best.real_score << endl;
 	return 0;
 }
 
@@ -204,8 +204,8 @@ void read_file(string file){
 	getline(myfile, myline, '\n');//lê fim dos depósitos
 	getline(myfile, myline, '\n');//lê o fim de um arquivo
 
-	cout << "K = " << qtd_carros << endl;
-	cout << "C = " << capacity << endl;
-	cout << "depot = " << depot << endl;
-	cout << "Genes = " << tam_genes << endl;
+	// cout << "K = " << qtd_carros << endl;
+	// cout << "C = " << capacity << endl;
+	// cout << "depot = " << depot << endl;
+	// cout << "Genes = " << tam_genes << endl;
 }
