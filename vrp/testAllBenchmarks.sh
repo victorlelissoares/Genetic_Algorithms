@@ -2,7 +2,7 @@
 #set -x #seta debug
 
 diretorio="$(pwd)"
-diretorio="${diretorio}/benchmarks/A" # Substitua pelo caminho do diretório desejado
+diretorio="${diretorio}/benchmarks/$1" # Substitua pelo caminho do diretório desejado
 extensao=".vrp"
 
 arquivos_vrp=()  # Cria um array vazio para armazenar os nomes dos arquivos .vrp
@@ -16,7 +16,7 @@ done
 #echo "Nomes dos arquivos .vrp:"
 for arquivo in "${arquivos_vrp[@]}"; do
     echo "Caso de teste: $arquivo"
-    #ordem de argumentos ./automateTest.sh numExecuções caminho do benchmark a partir da pasta benchmark numCaminhoes
+    #ordem de argumentos ./testAllBenchmarks.sh; diretório de bechmark; número de execuções por instância
    
     namefile=$(basename "$arquivo")
     
@@ -36,7 +36,7 @@ for arquivo in "${arquivos_vrp[@]}"; do
     g++ main.cpp -o vrp -O3
     #echo $k
     # Executa n vezes o programa
-    for ((i = 1; i <= $1; i++)); do                
+    for ((i = 1; i <= $2; i++)); do                
         # Inicie o contador de tempo para esta execução
         SECONDS=0
 
