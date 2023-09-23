@@ -1,5 +1,5 @@
 #include "population.hpp"
-
+#include <iomanip>
 void read_file(string file_);
 
 // Uma certa porcentagem das melhores soluções é mantida para a proxima geração(elitismo)
@@ -103,6 +103,8 @@ int main(int argc, char const *argv[]){
 	}
 	
 	//pop.printPopulation();
+	//pop.best.printGenes();
+	std::cout << std::setprecision(2) << std::fixed;
 	cout << pop.best.real_score << endl;
 	return 0;
 }

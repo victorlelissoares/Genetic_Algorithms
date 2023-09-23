@@ -21,13 +21,13 @@ int qtd_carros    = 0;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 200; // quantidade de indivíduos da população
+int tam_pop      = 10000; // quantidade de indivíduos da população
 
-int tam_torneio  = 100; // tamanho do torneio
+int tam_torneio  = 1000; // tamanho do torneio
 
-int geracoes     = 100; // quantidade de gerações
+int geracoes     = 1000; // quantidade de gerações
 
-double prob_mut  = 0.8; // probabilidade de mutação
+double prob_mut  = 0.4; // probabilidade de mutação
 
 double prob_cruz = 0.8; // probabilidade de cruzamento
 
