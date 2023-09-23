@@ -20,7 +20,10 @@ for arquivo in "${arquivos_vrp[@]}"; do
    
     namefile=$(basename "$arquivo")
     
+    #retira os 4 ultimos caracteres, que sao: .vrp
     outputfile="${namefile::-4}"
+
+    #concatena o nome do arquivo com a extensão .out
     outputfile="${outputfile}.out"
 
     #extrai o número de veículos do título do arquivo
