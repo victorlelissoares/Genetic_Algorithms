@@ -3,3 +3,5 @@ vrp/vrp
 vrp/results
 
 vrp/benchmarks
+
+.vscode/*
