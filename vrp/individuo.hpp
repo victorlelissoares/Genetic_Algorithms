@@ -21,15 +21,15 @@ int qtd_carros    = 0;
 
 int tam_genes     = 0; // quantidade de genes
 
-int tam_pop      = 10000; // quantidade de indivíduos da população
+int tam_pop      = 20000; // quantidade de indivíduos da população
 
 int tam_torneio  = 1000; // tamanho do torneio
 
-int geracoes     = 1000; // quantidade de gerações
+int geracoes     = 5000; // quantidade de gerações
 
-double prob_mut  = 0.4; // probabilidade de mutação
+double prob_mut  = 0.3; // probabilidade de mutação
 
-double prob_cruz = 0.8; // probabilidade de cruzamento
+double prob_cruz = 0.75; // probabilidade de cruzamento
 
 double prob_repair = 0;//como a reparação de cromosso é um processo muito custoso, a probabilidade de acontecer
 //será baixa para garantir o bom desempenho do programa
